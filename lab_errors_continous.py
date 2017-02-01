@@ -12,7 +12,7 @@ import random
 import numpy.random as nprnd
 #import Jesuslib as jl
 import matplotlib as mpl
-mpl.use('Agg')
+#mpl.use('Agg')
 import matplotlib.pyplot as plt
 from glob import glob
 import os
@@ -77,7 +77,7 @@ while True:
         ts=data[:,0]
         print file_name
         print datetime.datetime.now().isoformat()
-        print getpwuid(stat(file_name).st_uid).pw_name
+#        print getpwuid(stat(file_name).st_uid).pw_name
         mu, sigma = data[0,1], data[0,2]/1.96# mean and standard deviation#1.96
 
         droplets=len(ts)
@@ -187,14 +187,14 @@ while True:
         ns_values=final_data[:,2]
         ns_up=final_data[:,3]
         ns_low=final_data[:,4]
-        plt.figure()
-        plt.errorbar(ts,ns_values,yerr=[ns_values-ns_low,ns_up-ns_values],c='k')
-        plt.yscale('log')
-        plt.title('%i Droplets'%droplets)
-        plt.xlabel('T')
-        plt.ylabel('$n_s$')
-        plt.savefig(folder+'Plot_%s.png'%file_name[4:-4],format='png')
-        plt.close()
-        print 'plot saved', file_name
+ #       plt.figure()
+ #       plt.errorbar(ts,ns_values,yerr=[ns_values-ns_low,ns_up-ns_values],c='k')
+ #       plt.yscale('log')
+ #       plt.title('%i Droplets'%droplets)
+ #       plt.xlabel('T')
+ #       plt.ylabel('$n_s$')
+ #       plt.savefig(folder+'Plot_%s.png'%file_name[4:-4],format='png')
+ #       plt.close()
+ #       print 'plot saved', file_name
 
     a_old=a[:]

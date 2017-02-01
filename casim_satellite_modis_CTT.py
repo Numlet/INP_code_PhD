@@ -147,10 +147,10 @@ cube_i = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_
 plt.imshow(cube_bl.data[13,])
 plt.colorbar()
 #%%
-print cube
+#print cube
 data=cube_l.data[:,:,:,:]+cube_i.data[:,:,:,:]
 #data[data==0]=999
-
+data[data<1e-6]=0
 temp_cloud=temperature.data
 temp_cloud[data==0]=999
 temp_cloud.min(axis=1)
@@ -171,7 +171,7 @@ coord=np.zeros([len(sat_lon),2])
 coord[:,0]=sat_lon
 coord[:,1]=sat_lat
 cm=plt.cm.RdBu_r
-model_lons,model_lats=unrotated_grid(cube)
+model_lons,model_lats=unrotated_grid(cube_l)
 #model_lons=np.linspace(-5,20,500)
 X,Y=np.meshgrid(model_lons, model_lats)
 #%%
@@ -249,6 +249,7 @@ plt.plot(bins, pdf,label='BASE R=%1.2f'%np.corrcoef(pdf[:],sat_pdf[:])[0,1])
 plt.plot(sat_bins, sat_pdf,label='satellite')
 plt.legend(loc='best')
 plt.title('Cloud top temperature')
+#plt.xticks([int(i) for i in np.linspace(250,273,12)])
 plt.ylabel('Normalized PDF')
 plt.xlabel('Cloud top temperature')
 #plt.xlim(0,5)

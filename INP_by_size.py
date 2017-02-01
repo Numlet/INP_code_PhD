@@ -230,6 +230,30 @@ for run in runs:
         INP=np.zeros(rs.shape)
         N_size=np.zeros(rs.shape)
         INP_total=0
+        mo_volfrac=(mo_mass/rhocomp[3])/modes_vol
+        Nd=n_particles*mo_volfrac
+        for i in [2]:
+            M=4/3.*np.pi*rs**3
+            ff=1-np.exp(-marine_org_parameterization(T)*M)
+            PDF=lognormal_PDF(rmean[i],rs,std[i])
+            dINP=PDF*Nd[i]*ff
+            N_size=N_size+PDF*n_particles[i]
+            INP=INP+(dINP)
+            INP_total=INP_total+(dINP*step).sum()
+
+        return INP,rs,INP_total
+
+    def calculate_INP_mo_by_sizes(T,rmin=1e-8,rmax=1e-4,step=1e-8):
+        std=s.sigma[:]
+        #T=258
+        rs=np.arange(rmin,rmax,step)
+    #    rbar_volume=rmean[i]*np.exp(3.0*np.log(std[i]))
+        rmean=radius
+    
+    #    contribution_to_PM25=jl.lognormal_cummulative(mo_mass[i],rs,rbar_volume,std[i])
+        INP=np.zeros(rs.shape)
+        N_size=np.zeros(rs.shape)
+        INP_total=0
         for i in [2]:
     #        if i==3:
     #            continue
@@ -331,11 +355,6 @@ INP size distribution for Marine and Feldspar
 
 
 '''
-
-
-
-
-
 
 
 lat=53
