@@ -103,7 +103,7 @@ plt.show()
 #%%
 '''
 
-FELDSPAR INP DISTRIBUTIONS 
+FELDSPAR INP DISTRIBUTIONS
 
 '''
 INP_feldext=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e3 #l
@@ -126,7 +126,7 @@ jl.plot(INP_feldext_ambient[12,:,:,:].mean(axis=-1),clevs=levels,cblabel='$[INP]
         title='',#INP_ambient feldspar pressure=600hpa
         file_name=saving_folder+'feldspar_600_ambient',colorbar_format_sci=1,
         saving_format='png',f_size=sl,cmap=cmap)
-        
+
 #%%
 '''
 MARINE DISTRIBUTION
@@ -168,7 +168,7 @@ jl.plot(total_marine_mass_year_mean[30,:,:],title='Year mean concentration',cbla
 #%%
 '''
 
-MARINE INP DISTRIBUTIONS 
+MARINE INP DISTRIBUTIONS
 
 '''
 cmap=plt.cm.RdBu_r
@@ -208,7 +208,7 @@ jl.plot(INP_marine_ambient_constantpress_daily[12,:,:,:].mean(axis=-1),clevs=lev
         title='INP_ambient marine pressure=600hpa',
         file_name=saving_folder+'marine_600_ambient',colorbar_format_sci=1,
         saving_format='png',f_size=sl,dpi=600)
-        
+
 #%%
 '''
 
@@ -292,7 +292,7 @@ for months in seasons.iterkeys():
         days_inp_not_small_season=days_inp_not_small_season+days_inp_not_small[:,:,:,imon]
         temperatures_season=temperatures_season+temperatures_monthly_constantpl[:,:,:,imon]
     temperatures_season=temperatures_season/3
-    #jl.plot(ratio_days_per_month_season[ilev,]/days_inp_not_small_season[ilev,],title=months,cmap=plt.cm.OrRd,cblabel=' ',file_name=saving_folder+'Percentage_days_%i_%s'%(((i+1)*50),months))        
+    #jl.plot(ratio_days_per_month_season[ilev,]/days_inp_not_small_season[ilev,],title=months,cmap=plt.cm.OrRd,cblabel=' ',file_name=saving_folder+'Percentage_days_%i_%s'%(((i+1)*50),months))
     days_inp_not_small_season[days_inp_not_small_season<3]=0
     fig=plt.figure()
     ax=plt.subplot(1,1,1)
@@ -306,9 +306,9 @@ for months in seasons.iterkeys():
     #CF=ax.contourf(X,Y,(days_inp_not_small_season).mean(axis=-1),cmap=plt.cm.OrRd)
     #CF=ax.contourf(X,Y,(ratio_days_per_month_season.mean(axis=-1)/days_inp_not_small_season.mean(axis=-1)),cmap=plt.cm.OrRd)
     #CB=plt.colorbar(CF)
-    CB=plt.colorbar(CF,ticks=levels,drawedges=1,label='%')    
+    CB=plt.colorbar(CF,ticks=levels,drawedges=1,label='%')
     ax.invert_yaxis()
-    
+
     ax.set_ylim(ymax=200)
     #ax.tick_params(axis='both', which='major')#, labelsize=fs)
     ax.set_ylabel('Pressure level $hPa$')
@@ -319,9 +319,9 @@ for months in seasons.iterkeys():
     plt.show()
 
 
-#jl.plot(ratio_days_per_month[ilev,].sum(axis=-1)/days_inp_not_small[ilev,].sum(axis=-1),title='Year mean',cmap=plt.cm.RdGy_r)        
-        
-        
+#jl.plot(ratio_days_per_month[ilev,].sum(axis=-1)/days_inp_not_small[ilev,].sum(axis=-1),title='Year mean',cmap=plt.cm.RdGy_r)
+
+
 #%%
 for i in range (20):
     jl.grid_earth_map_with_countourlines(ratio_days_per_month[i,],contour_map=days_inp_not_small[i,],
@@ -452,7 +452,7 @@ INP_marine_ambient_constantpress_daily=np.load('/nfs/a201/eejvt/MARINE_PARAMETER
 INP_feldext_ambient_constantpress_daily=np.load('/nfs/a201/eejvt/DAILY_RUN/INP_feld_extamb_constant_press.npy')*1e3#l
 
 levelsmo=[1,10,20,30,40,50,60,70,80,90,100,400]
-fs=10   
+fs=10
 mdays=[0,31,59,90,120,151,181,212,243,273,304,334,365]
 mnames=['January','February','March','April','May','June','July','August','September','October','November','December']
 levelsmo=[1,10,20,30,40,50,60,70,80,90,100,500]
@@ -473,13 +473,13 @@ for i in range(12):
     CF=cx.contourf(Xmo,Ymo,INP_marine_ambient_constantpress_daily[:,:,:,mdays[i]:mdays[i+1]].mean(axis=(-1,-2))*1e3,levelsmo,cmap=plt.cm.YlOrRd,norm= colors.BoundaryNorm(levelsmo, 256))
     if i==2 or i==5 or i==8 or i==11:
         CB=plt.colorbar(CF,ticks=levelsmo,drawedges=1,label='$m^{-3}$')
-    
+
     cx.invert_yaxis()
     cx.set_ylim(ymax=200)
     cx.tick_params(axis='both', which='major', labelsize=fs)
     if i==0 or i==3 or i==6 or i==9:
         cx.set_ylabel('Pressure level $(hPa)$')
-    if i>8:    
+    if i>8:
         cx.set_xlabel('Latitude')
     cx.xaxis.set_ticks(np.arange(-90,100,20))
 plt.show()
@@ -552,7 +552,7 @@ if errors:
 plot=plt.scatter(data_points[:,2],simulated_points[:,0],c=ratio,cmap=cmap,marker=marker,s=marker_size,vmin=-3.5, vmax=3.5)
 plot=plt.scatter(data_points_mason[:,2],simulated_points_mason[:,0],c=ratio_mason,cmap=cmap,marker=marker_mason,s=marker_size_mason,vmin=-3, vmax=3)
     #plt.errorbar(data_points[:,2],simulated_points[:,0],yerr=[simulated_points_min[:,0],simulated_points_max[:,0]], linestyle="None",c='k')
-    
+
 #plot=plt.scatter(data_points[:,2],simulated_points[:,0],c=bias,cmap=cmap,marker=marker,s=marker_size,vmin=-5, vmax=5)
 #plot=plt.scatter(data_points_mason[:,2],simulated_points_mason[:,0],c=bias_mason,cmap=cmap,marker=marker_mason,s=marker_size_mason,vmin=-5, vmax=5)
 
@@ -584,7 +584,7 @@ max_plot=max_val
 
 plt.title('b)')
 x=np.linspace(0.1*min_plot,10*max_plot,100)
-#global x     
+#global x
 r=np.corrcoef(np.log(data_points[:,2]),np.log(simulated_points[:,0]))
 print r
 #rmsd=RMSD(data_points[:,2],simulated_points[:,0])
@@ -735,11 +735,11 @@ params[title]=INP_param(title,simulated_values,errors,simulated_values_max,simul
 
 for param in params.itervalues():
     #print param
-    print'\n\n\n'    
+    print'\n\n\n'
     INP_obs_mason=jl.read_INP_data("/nfs/a107/eejvt/INP_DATA/MARINE_INFLUENCED.dat",header=1)
     INP_obs=jl.read_INP_data("/nfs/a107/eejvt/INP_DATA/TERRESTIAL_INFLUENCED.dat",header=1)
-    
-    
+
+
     if param.title=='Niemand_dust':
 #    if True:
         range_par=np.logical_and((INP_obs[:,1]<-12), (INP_obs[:,1]>-33))
@@ -773,30 +773,30 @@ for param in params.itervalues():
     else:
         INP_obs_out=[]
         INP_obs_mason_out=[]
-        
+
     plt.figure()
     cmap=plt.cm.RdBu_r
     marker='o'
     marker_mason='^'
     marker_size=50
     marker_size_mason=120
-    
+
     INPconc=INP_obs
     INPconc_mason=INP_obs_mason
     simulated_points=jl.obtain_points_from_data(param.simulated_values,INPconc)#,surface_level_comparison_on=True)
     simulated_points_mason=jl.obtain_points_from_data(param.simulated_values,INPconc_mason)#,surface_level_comparison_on=True)
 
-    if param.errors:    
+    if param.errors:
         simulated_points_max=jl.obtain_points_from_data(param.simulated_values_max,INPconc)#,surface_level_comparison_on=True)
         simulated_points_min=jl.obtain_points_from_data(param.simulated_values_min,INPconc)#,surface_level_comparison_on=True)
         simulated_points_mason_max=jl.obtain_points_from_data(param.simulated_values_max,INPconc_mason)#,surface_level_comparison_on=True)
         simulated_points_mason_min=jl.obtain_points_from_data(param.simulated_values_min,INPconc_mason)#,surface_level_comparison_on=True)
     data_points=INPconc
     data_points_mason=INPconc_mason
-    
+
     bias=np.log10(simulated_points[:,0])-np.log10(data_points[:,2])
     bias_mason=np.log10(simulated_points_mason[:,0])-np.log10(data_points_mason[:,2])
-    
+
     if param.errors:
         plt.errorbar(data_points_mason[:,2],simulated_points_mason[:,0],
                      yerr=[simulated_points_mason[:,0]-simulated_points_mason_min[:,0],simulated_points_mason_max[:,0]-simulated_points_mason[:,0]],
@@ -820,7 +820,7 @@ for param in params.itervalues():
         INPconc_out=INP_obs_out
         simulated_points_out=jl.obtain_points_from_data(param.simulated_values,INPconc_out)#,surface_level_comparison_on=True)
         data_points_out=INPconc_out
-        if param.errors:    
+        if param.errors:
             simulated_points_max_out=jl.obtain_points_from_data(param.simulated_values_max,INPconc_out)#,surface_level_comparison_on=True)
             simulated_points_min_out=jl.obtain_points_from_data(param.simulated_values_min,INPconc_out)#,surface_level_comparison_on=True)
             plt.errorbar(data_points_out[:,2],simulated_points_out[:,0],
@@ -836,7 +836,7 @@ for param in params.itervalues():
         simulated_points_mason_out=jl.obtain_points_from_data(param.simulated_values,INPconc_mason_out)#,surface_level_comparison_on=True)
         data_points_out=INPconc_out
         data_points_mason_out=INPconc_mason_out
-        if param.errors:    
+        if param.errors:
             simulated_points_mason_max_out=jl.obtain_points_from_data(param.simulated_values_max,INPconc_mason_out)#,surface_level_comparison_on=True)
             simulated_points_mason_min_out=jl.obtain_points_from_data(param.simulated_values_min,INPconc_mason_out)#,surface_level_comparison_on=True)
             plt.errorbar(data_points_mason_out[:,2],simulated_points_mason_out[:,0],
@@ -848,7 +848,7 @@ for param in params.itervalues():
 
 
         #plt.errorbar(data_points[:,2],simulated_points[:,0],yerr=[simulated_points_min[:,0],simulated_points_max[:,0]], linestyle="None",c='k')
-        
+
 #    print '--------------------------------------------------------------------'
 #    print 'outside range'
 #    print param.title
@@ -864,23 +864,23 @@ for param in params.itervalues():
 #                         yerr=[simulated_points_mason[:,0]-simulated_points_mason_min[:,0],simulated_points_mason_max[:,0]-simulated_points_mason[:,0]],
 #                         linestyle="None",c='k',zorder=0)
     #plot=plt.scatter(data_points_mason[:,2],simulated_points_mason[:,0],c=bias_mason,cmap=cmap,marker=marker_mason,s=marker_size_mason,vmin=-5, vmax=5)
-    
-    
+
+
     plt.ylabel('Simulated [INP] ($cm^{-3}$)')
     plt.xlabel('Observed [INP] ($cm^{-3}$)')
     if param.title=='Meyers':
         plt.ylabel('Calculated [INP] ($cm^{-3}$)')
-    
+
     if np.min(simulated_points[:,0])>np.min(data_points[:,2]):
         min_plot=np.min(data_points[:,2])
     else:
         min_plot=np.min(simulated_points[:,0])
-    
+
     if np.max(simulated_points[:,0])<np.max(data_points[:,2]):
         max_plot=np.max(data_points[:,2])
     else:
         max_plot=np.max(simulated_points[:,0])
-        
+
     #minx=np.min(data_points[:,2])
     #maxx=np.max(data_points[:,2])
     #miny=np.min(simulated_points[:,0])
@@ -893,10 +893,10 @@ for param in params.itervalues():
     maxy=np.max(max_val)
     min_plot=min_val
     max_plot=max_val
-    
-    
+
+
     x=np.linspace(0.1*min_plot,10*max_plot,100)
-    #global x     
+    #global x
     r=np.corrcoef(np.log(data_points[:,2]),np.log(simulated_points[:,0]))
     mean_error=jl.mean_error(np.log(data_points[:,2]),np.log(simulated_points[:,0]))
     mean_bias=jl.mean_bias(np.log(data_points[:,2]),np.log(simulated_points[:,0]))
@@ -915,7 +915,7 @@ for param in params.itervalues():
     else:
         plt.title(param.title)
     print '(log) R=%1.3f ERROR=%1.3f BIAS=%1.3f'%(r[0,1],mean_error,mean_bias)
-    
+
     #rmsd=RMSD(data_points[:,2],simulated_points[:,0])
     #plt.title('R=%f RMSD=%f'%(r[0,1],rmsd))
     plt.plot(x,x,'k-')
@@ -941,9 +941,9 @@ for param in params.itervalues():
     print (np.array(np.abs(bias)<1.5).sum()+np.array(np.abs(bias_mason)<1.5).sum())/float(len(bias)+len(bias_mason))
 
 #    plt.close()
-    
-    
-    
+
+
+
 
 #%%
 '''
@@ -1017,12 +1017,12 @@ m = fig.add_subplot(1,1,1)
 m = Basemap(projection='cyl',lon_0=0)
 m.drawcoastlines()
 m.drawcountries()
-#m.bluemarble()  
+#m.bluemarble()
 #m.drawmapboundary(fill_color='#99ffff')
 #m.fillcontinents(color='#cc9966',lake_color='#99ffff')
-    
+
 #m = Basemap(resolution='c',projection='ortho',lat_0=60.,lon_0=-60.)
-for camp_key in campaigns_dict.iterkeys():    
+for camp_key in campaigns_dict.iterkeys():
     if campaigns_dict[camp_key].m_or_t =='m':
         data=data_marine
     else:
@@ -1118,7 +1118,7 @@ INP_marine_alltemps=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY
 INP_feldext=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e3 #l
 #%%
 for tem in [15,20,22,25,30]:
-    
+
     print 'Temperature'
     print '-',tem,'\n'
     for imon in [6,7,8]:
@@ -1134,7 +1134,7 @@ for tem in [15,20,22,25,30]:
     print 'total %1.2e \n'%(INP_marine_alltemps[tem,30,jl.mace_head_latlon_index[0],jl.mace_head_latlon_index[1],[6,7,8]].mean(axis=-1)*1e3+(INP_feldext[tem,30,jl.mace_head_latlon_index[0],jl.mace_head_latlon_index[1],[6,7,8]].mean(axis=-1)*1e3))
     print '% marine',(INP_marine_alltemps[tem,30,jl.mace_head_latlon_index[0],jl.mace_head_latlon_index[1],[6,7,8]].mean(axis=-1)*1e3/(INP_feldext[tem,30,jl.mace_head_latlon_index[0],jl.mace_head_latlon_index[1],[6,7,8]].mean(axis=-1)*1e3+INP_marine_alltemps[tem,30,jl.mace_head_latlon_index[0],jl.mace_head_latlon_index[1],[6,7,8]].mean(axis=-1)*1e3))*100
     print '\n'
-    
+
 #%%
 a=np.genfromtxt('/nfs/a107/eejvt/INP_DATA/Conen_chaumont.dat',delimiter="\t",skip_header=1)
 a=np.genfromtxt('/nfs/a107/eejvt/INP_DATA/Conen_JFJ.dat',delimiter="\t",skip_header=1)
@@ -1188,11 +1188,11 @@ for folder in a:
     b=glob(folder+'/*')
     print b
     for file_name in b:
-        
+
         if 'Impinger' in file_name or 'impinger' in file_name:
            n=n+1
         #c=
-        #if 
+        #if
         files=files+1
 print n
 print files
@@ -1208,7 +1208,7 @@ radii_bb=s.rbarwet[:,30,barbados_indx[0],barbados_indx[1],:].mean(axis=-1)
 
 n_cp=s.st_nd[:,30,cape_verde_indx[0],cape_verde_indx[1],:].mean(axis=-1)
 n_bb=s.st_nd[:,30,barbados_indx[0],barbados_indx[1],:].mean(axis=-1)
-sigma=[1.59,1.59,1.4,2.0,1.59,1.4,2.0] 
+sigma=[1.59,1.59,1.4,2.0,1.59,1.4,2.0]
 rs=jl.logaritmic_steps(-8,-4,10000)
 size_dist_cp=np.zeros(len(rs.mid_points))
 size_dist_bb=np.zeros(len(rs.mid_points))
