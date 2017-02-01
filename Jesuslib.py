@@ -63,7 +63,7 @@ pressure=np.array([   4.47640944,   28.3048172 ,   48.96452713,   69.30890656,
         780.80426025,  822.40307617,  861.61694336,  897.16723633,
         927.43457031,  950.37841797,  963.48803711], dtype=np.float32)
 
-terrestrial_grid=np.genfromtxt('/nfs/a107/eejvt/PYTHON_CODE/terrestrial_grid.dat')
+# terrestrial_grid=np.genfromtxt('/nfs/a107/eejvt/PYTHON_CODE/terrestrial_grid.dat')
 
 def feld_parametrization(T):
     ns=np.exp((-1.03802178356815*T)+275.263379304105)
@@ -164,9 +164,9 @@ def log_levels(data_map,levels_per_order=2):
     orders_of_magnitude=lim_max-lim_min
     levels=np.logspace(lim_min,lim_max,levels_per_order*orders_of_magnitude+1)
     return levels.tolist()
-    
-    
-    
+
+
+
 def find_nearest_vector_index(array, value):
     n = np.array([abs(i-value) for i in array])
     nindex=np.apply_along_axis(np.argmin,0,n)
@@ -218,7 +218,7 @@ def RMS_err(a,b):
 def NMB(observed,modelled):
     if len(observed)!=len(modelled):
         raise NameError('Observed values and modelled values have different lens')
-    
+
     return (1/float(len(observed)))*np.sum((observed-modelled)/(0.5*(observed+modelled)))
 
 def mean_bias(observed,modelled):
@@ -561,102 +561,102 @@ def lognormal_PDF(rmean,r,std):
    X=(1/(r*np.log(std)*np.sqrt(2*np.pi)))*np.exp(-(np.log(r)-np.log(rmean))**2/(2*np.log(std)**2))
    return X
 
-
-def grid_earth_map(data,levels=np.zeros(1),title=0,colorbar_format_sci=0,cblabel='$\mu g/ m^3$',cmap=plt.cm.RdBu_r,file_name=datetime.datetime.now().isoformat(),saving_format='svg',dpi=300,big_title='no',lon=readsav('/nfs/a107/eejvt/IDL_CODE/glon.sav').glon,lat=readsav('/nfs/a107/eejvt/IDL_CODE/glat.sav').glat):
-    fig=plt.figure(figsize=(20, 20))
-    mnames=['January','February','March','April','May','June','July','August','September','October','November','December']
-
-    for i in range(12):
-        print i, mnames[i]
-        m = fig.add_subplot(4,3,i+1)
-        # resolution = 'c' means use crude resolution coastlines.
-        #m = Basemap(projection='merc',lon_0=0)
-        m = Basemap(projection='cyl',llcrnrlat=-80,urcrnrlat=80,\
-            llcrnrlon=-180,urcrnrlon=180,lat_ts=20)
-        m.drawcoastlines()
-
-        X,Y=np.meshgrid(lon,lat)
-        if type(levels) is list:
-
-        #clevs=clevs.tolist()
-
-            cs=m.contourf(X,Y,data[:,:,i],levels,latlon=True,cmap=cmap,norm= colors.BoundaryNorm(levels, 256))
-            if colorbar_format_sci:
-                def fmt(x, pos):
-                    a, b = '{:.1e}'.format(x).split('e')
-                    b = int(b)
-                    return r'${} \times 10^{{{}}}$'.format(a, b)
-                if i==2 or i==5 or i==8 or i==11:
-                    cb = m.colorbar(cs,"right",format=ticker.FuncFormatter(fmt),ticks=levels)
-            else:
-                if i==2 or i==5 or i==8 or i==11:
-                    cb = m.colorbar(cs,format='%.0e')
-                    cb.set_label(cblabel)
-                    #cb.set_ticks(levels)
-                    #cb.set_ticklabels(levels)
-        else:
-            cs=m.contourf(X,Y,data[:,:,i],15,latlon=True,cmap=cmap)
-            cb = m.colorbar(cs)
-        plt.title(mnames[i])
-        print
-    if not big_title=='no':
-        plt.figtext(0.5,0.95,big_title,fontsize=20)
-    plt.savefig(file_name+'.'+saving_format,format=saving_format,dpi=dpi)
-    #plt.title(title)
-    plt.show()
-
-def grid_earth_map_with_countourlines(data,levels=np.zeros(1),title=0,colorbar_format_sci=0,cblabel='$\mu g/ m^3$',
-                                      cmap=plt.cm.RdBu_r,file_name=datetime.datetime.now().isoformat(),saving_format='svg',dpi=300
-                                      ,big_title='no',lon=readsav('/nfs/a107/eejvt/IDL_CODE/glon.sav').glon,lat=readsav('/nfs/a107/eejvt/IDL_CODE/glat.sav').glat
-                                      ,contour_map=0,contour_map_lines=[0,1,2],line_color='k'):
-    fig=plt.figure(figsize=(40, 20))
-    mnames=['January','February','March','April','May','June','July','August','September','October','November','December']
-
-    for i in range(12):
-        print i, mnames[i]
-        m = fig.add_subplot(4,3,i+1)
-        # resolution = 'c' means use crude resolution coastlines.
-        #m = Basemap(projection='merc',lon_0=0)
-        m = Basemap(projection='cyl',llcrnrlat=-80,urcrnrlat=80,\
-            llcrnrlon=-180,urcrnrlon=180,lat_ts=20)
-        m.drawcoastlines()
-
-        X,Y=np.meshgrid(lon,lat)
-        if type(levels) is list:
-
-        #clevs=clevs.tolist()
-
-            cs=m.contourf(X,Y,data[:,:,i],levels,latlon=True,cmap=cmap,norm= colors.BoundaryNorm(levels, 256))
-
-            lala=m.contour(X,Y,contour_map[:,:,i],contour_map_lines,colors=line_color,hold='on',latlon=1)
-            plt.clabel(lala, inline=1,fmt='%1.2f',fontsize=14)
-            plt.setp(lala.collections , linewidths=2)
-            if colorbar_format_sci:
-                def fmt(x, pos):
-                    a, b = '{:.1e}'.format(x).split('e')
-                    b = int(b)
-                    return r'${} \times 10^{{{}}}$'.format(a, b)
-                if i==2 or i==5 or i==8 or i==11:
-                    cb = m.colorbar(cs,"right",format=ticker.FuncFormatter(fmt),ticks=levels)
-            else:
-                if i==2 or i==5 or i==8 or i==11:
-                    cb = m.colorbar(cs,format='%.0e')
-                    cb.set_label(cblabel)
-                    #cb.set_ticks(levels)
-                    #cb.set_ticklabels(levels)
-        else:
-            cs=m.contourf(X,Y,data[:,:,i],15,latlon=True,cmap=cmap)
-            cb = m.colorbar(cs,format='%i')
-            lala=m.contour(X,Y,contour_map[:,:,i],contour_map_lines,colors=line_color,hold='on',latlon=1)
-            plt.clabel(lala, inline=1,fmt='%i',fontsize=14)
-            plt.setp(lala.collections , linewidths=2)
-        plt.title(mnames[i])
-        print
-    if not big_title=='no':
-        plt.figtext(0.5,0.95,big_title,fontsize=20)
-    plt.savefig(file_name+'.'+saving_format,format=saving_format,dpi=dpi)
-    #plt.title(title)
-    plt.show()
+#
+# def grid_earth_map(data,levels=np.zeros(1),title=0,colorbar_format_sci=0,cblabel='$\mu g/ m^3$',cmap=plt.cm.RdBu_r,file_name=datetime.datetime.now().isoformat(),saving_format='svg',dpi=300,big_title='no',lon=readsav('/nfs/a107/eejvt/IDL_CODE/glon.sav').glon,lat=readsav('/nfs/a107/eejvt/IDL_CODE/glat.sav').glat):
+#     fig=plt.figure(figsize=(20, 20))
+#     mnames=['January','February','March','April','May','June','July','August','September','October','November','December']
+#
+#     for i in range(12):
+#         print i, mnames[i]
+#         m = fig.add_subplot(4,3,i+1)
+#         # resolution = 'c' means use crude resolution coastlines.
+#         #m = Basemap(projection='merc',lon_0=0)
+#         m = Basemap(projection='cyl',llcrnrlat=-80,urcrnrlat=80,\
+#             llcrnrlon=-180,urcrnrlon=180,lat_ts=20)
+#         m.drawcoastlines()
+#
+#         X,Y=np.meshgrid(lon,lat)
+#         if type(levels) is list:
+#
+#         #clevs=clevs.tolist()
+#
+#             cs=m.contourf(X,Y,data[:,:,i],levels,latlon=True,cmap=cmap,norm= colors.BoundaryNorm(levels, 256))
+#             if colorbar_format_sci:
+#                 def fmt(x, pos):
+#                     a, b = '{:.1e}'.format(x).split('e')
+#                     b = int(b)
+#                     return r'${} \times 10^{{{}}}$'.format(a, b)
+#                 if i==2 or i==5 or i==8 or i==11:
+#                     cb = m.colorbar(cs,"right",format=ticker.FuncFormatter(fmt),ticks=levels)
+#             else:
+#                 if i==2 or i==5 or i==8 or i==11:
+#                     cb = m.colorbar(cs,format='%.0e')
+#                     cb.set_label(cblabel)
+#                     #cb.set_ticks(levels)
+#                     #cb.set_ticklabels(levels)
+#         else:
+#             cs=m.contourf(X,Y,data[:,:,i],15,latlon=True,cmap=cmap)
+#             cb = m.colorbar(cs)
+#         plt.title(mnames[i])
+#         print
+#     if not big_title=='no':
+#         plt.figtext(0.5,0.95,big_title,fontsize=20)
+#     plt.savefig(file_name+'.'+saving_format,format=saving_format,dpi=dpi)
+#     #plt.title(title)
+#     plt.show()
+#
+# def grid_earth_map_with_countourlines(data,levels=np.zeros(1),title=0,colorbar_format_sci=0,cblabel='$\mu g/ m^3$',
+#                                       cmap=plt.cm.RdBu_r,file_name=datetime.datetime.now().isoformat(),saving_format='svg',dpi=300
+#                                       ,big_title='no',lon=readsav('/nfs/a107/eejvt/IDL_CODE/glon.sav').glon,lat=readsav('/nfs/a107/eejvt/IDL_CODE/glat.sav').glat
+#                                       ,contour_map=0,contour_map_lines=[0,1,2],line_color='k'):
+#     fig=plt.figure(figsize=(40, 20))
+#     mnames=['January','February','March','April','May','June','July','August','September','October','November','December']
+#
+#     for i in range(12):
+#         print i, mnames[i]
+#         m = fig.add_subplot(4,3,i+1)
+#         # resolution = 'c' means use crude resolution coastlines.
+#         #m = Basemap(projection='merc',lon_0=0)
+#         m = Basemap(projection='cyl',llcrnrlat=-80,urcrnrlat=80,\
+#             llcrnrlon=-180,urcrnrlon=180,lat_ts=20)
+#         m.drawcoastlines()
+#
+#         X,Y=np.meshgrid(lon,lat)
+#         if type(levels) is list:
+#
+#         #clevs=clevs.tolist()
+#
+#             cs=m.contourf(X,Y,data[:,:,i],levels,latlon=True,cmap=cmap,norm= colors.BoundaryNorm(levels, 256))
+#
+#             lala=m.contour(X,Y,contour_map[:,:,i],contour_map_lines,colors=line_color,hold='on',latlon=1)
+#             plt.clabel(lala, inline=1,fmt='%1.2f',fontsize=14)
+#             plt.setp(lala.collections , linewidths=2)
+#             if colorbar_format_sci:
+#                 def fmt(x, pos):
+#                     a, b = '{:.1e}'.format(x).split('e')
+#                     b = int(b)
+#                     return r'${} \times 10^{{{}}}$'.format(a, b)
+#                 if i==2 or i==5 or i==8 or i==11:
+#                     cb = m.colorbar(cs,"right",format=ticker.FuncFormatter(fmt),ticks=levels)
+#             else:
+#                 if i==2 or i==5 or i==8 or i==11:
+#                     cb = m.colorbar(cs,format='%.0e')
+#                     cb.set_label(cblabel)
+#                     #cb.set_ticks(levels)
+#                     #cb.set_ticklabels(levels)
+#         else:
+#             cs=m.contourf(X,Y,data[:,:,i],15,latlon=True,cmap=cmap)
+#             cb = m.colorbar(cs,format='%i')
+#             lala=m.contour(X,Y,contour_map[:,:,i],contour_map_lines,colors=line_color,hold='on',latlon=1)
+#             plt.clabel(lala, inline=1,fmt='%i',fontsize=14)
+#             plt.setp(lala.collections , linewidths=2)
+#         plt.title(mnames[i])
+#         print
+#     if not big_title=='no':
+#         plt.figtext(0.5,0.95,big_title,fontsize=20)
+#     plt.savefig(file_name+'.'+saving_format,format=saving_format,dpi=dpi)
+#     #plt.title(title)
+#     plt.show()
 
 
 def area_lognormal(rbar,sigma,Nd):
@@ -720,13 +720,13 @@ def correct_ff(ff,sigma):
 def plot_predicted_boundary_layer_INP(lat_point,lon_point,title=0):
     INP_marine_alltemps=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY/INP_marine_alltemps.npy')*1e-3#l
     INP_feldspar_alltemps=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e3#l
-    
-    
+
+
     ilat=find_nearest_vector_index(lat,lat_point)
-    if lon_point<0:    
+    if lon_point<0:
         ilon=find_nearest_vector_index(lon180,lon_point)
     else:
-        ilon=find_nearest_vector_index(lon,lon_point)    
+        ilon=find_nearest_vector_index(lon,lon_point)
     column_feldspar=INP_feldspar_alltemps[:,:,ilat,ilon,:]
     column_marine=INP_marine_alltemps[:,:,ilat,ilon,:]
     temps=np.arange(-37,1,1)
@@ -737,11 +737,11 @@ def plot_predicted_boundary_layer_INP(lat_point,lon_point,title=0):
     plt.fill_between(temps[7:],column_marine[7:,22,:].min(axis=-1),column_marine[7:,30,:].max(axis=-1),color='g',label='Marine Organics')
     plt.fill_between(temps[:6],column_feldspar[:6,22,:].min(axis=-1),column_feldspar[:6,30,:].max(axis=-1),color='r',alpha=0.3)
     plt.fill_between(temps[:8],column_marine[:8,22,:].min(axis=-1),column_marine[:8,30,:].max(axis=-1),color='g',alpha=0.3)
-    plt.plot(temps,column_feldspar[:,30,:].max(axis=-1)+column_marine[:,30,:].max(axis=-1),c='k',ls='--')    
+    plt.plot(temps,column_feldspar[:,30,:].max(axis=-1)+column_marine[:,30,:].max(axis=-1),c='k',ls='--')
     #for i in range(len(column_marine[0,:])):
     #    if i <22:
     #        continue
-    #    
+    #
     #    plt.plot(temps,column_marine[:,i],'g--',label='Marine organics')
     #    plt.plot(temps,column_feldspar[:,i],'r--',label='K-feldspar')
     if not title:
@@ -757,10 +757,10 @@ def plot_predicted_boundary_layer_INP(lat_point,lon_point,title=0):
 def plot_predicted_surface_INP(lat_point,lon_point,title=0):
     INP_marine_alltemps=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY/INP_marine_alltemps.npy')*1e-3#l
     INP_feldspar_alltemps=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e3#l
-    
-    
+
+
     ilat=find_nearest_vector_index(lat,lat_point)
-    if lon_point<0:    
+    if lon_point<0:
         ilon=find_nearest_vector_index(lon180,lon_point)
     else:
         ilon=find_nearest_vector_index(lon,lon_point)
@@ -774,11 +774,11 @@ def plot_predicted_surface_INP(lat_point,lon_point,title=0):
     plt.fill_between(temps[7:],column_marine[7:,30,:].min(axis=-1),column_marine[7:,30,:].max(axis=-1),color='g',label='Marine Organics')
     plt.fill_between(temps[:6],column_feldspar[:6,30,:].min(axis=-1),column_feldspar[:6,30,:].max(axis=-1),color='r',alpha=0.3)
     plt.fill_between(temps[:8],column_marine[:8,30,:].min(axis=-1),column_marine[:8,30,:].max(axis=-1),color='g',alpha=0.3)
-    plt.plot(temps,column_feldspar[:,30,:].max(axis=-1)+column_marine[:,30,:].max(axis=-1),c='k',ls='--')    
+    plt.plot(temps,column_feldspar[:,30,:].max(axis=-1)+column_marine[:,30,:].max(axis=-1),c='k',ls='--')
     #for i in range(len(column_marine[0,:])):
     #    if i <22:
     #        continue
-    #    
+    #
     #    plt.plot(temps,column_marine[:,i],'g--',label='Marine organics')
     #    plt.plot(temps,column_feldspar[:,i],'r--',label='K-feldspar')
     if not title:
@@ -1411,7 +1411,7 @@ lon=np.array([   0.        ,    2.8125    ,    5.625     ,    8.4375    ,
         326.25      ,  329.0625    ,  331.875     ,  334.6875    ,
         337.5       ,  340.3125    ,  343.125     ,  345.9375    ,
         348.75      ,  351.56253052,  354.375     ,  360.        ], dtype=np.float32)
-        
+
 lon180=np.copy(lon)
 lon180[lon>180]=lon[lon>180]-360
 
@@ -1444,14 +1444,14 @@ def send_email():
     #server = smtplib.SMTP('smtp.gmail.com', 587)
     #server.starttls()
     #server.login("my.alerts.jesus.vergara@gmail.com ", "palomaSS")
-    
+
     fromaddr = "my.alerts.jesus.vergara@gmail.com"
     toaddr = "eejvt@leeds.ac.uk"
     msg = MIMEMultipart()
     msg['From'] = fromaddr
     msg['To'] = toaddr
     msg['Subject'] = "Script finished"
-     
+
     body = "Your script \n %s  \n has finished "%sys.argv[0]
     msg.attach(MIMEText(body, 'plain'))
     server = smtplib.SMTP('smtp.gmail.com', 587)

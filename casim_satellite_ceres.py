@@ -87,7 +87,10 @@ cube = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PR
 cube_oldm = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/OLD_MICRO/All_time_steps/','m01s01i208'))[0]
 cube_nh = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/NO_HALLET/All_time_steps/','m01s01i208'))[0]
 cube_ni = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/NOICE/All_time_steps/','m01s01i208'))[0]
+cube_csb = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/BASE/All_time_steps/','m01s01i208'))[0]
+
 #cube=cube.extract(iris.Constraint(time=jl.find_nearest_vector(cube.coord('time').points,t13)))
+cube_csb=cube_csb[13,:,:]
 cube=cube[12,:,:]
 cube_nh=cube_nh[13,:,:]
 cube_3ord=cube_3ord[13,:,:]
@@ -134,10 +137,17 @@ plt.subplot(221)
 #plt.clabel(CS, levels_ct,
 #           inline=1,
 #           fmt='%1.1f',
-plt.title('OLD_MICRO')
-plt.contourf(X,Y,data_old,levels, origin='lower',cmap=cm)
-#plt.contourf(X,Y,grid_z1,levels, origin='lower',cmap=cm)
+
+plt.title('BASE (CS)')
+plt.contourf(X,Y,cube_csb.data,levels, origin='lower',cmap=cm)
+#plt.title('OLD_MICRO')
+#plt.contourf(X,Y,data_old,levels, origin='lower',cmap=cm)
+##plt.contourf(X,Y,grid_z1,levels, origin='lower',cmap=cm)
 cb=plt.colorbar()
+
+
+
+
 #plt.title('Satellite (CERES)')
 #           fontsize=14)
 
@@ -194,18 +204,21 @@ def PDF(data,nbins=100):
 bins,pdf=PDF(cube.data.flatten(),same_bins)
 #bins_con,pdf_con=PDF(cube_con.data.flatten(),same_bins)
 bins_old,pdf_old=PDF(data_old.flatten(),same_bins)
+bins_csb,pdf_csb=PDF(cube_csb.data.flatten(),same_bins)
 bins_3ord,pdf_3ord=PDF(cube_3ord.data.flatten(),same_bins)
 bins_2m,pdf_2m=PDF(cube_2m.data.flatten(),same_bins)
 bins_nh,pdf_nh=PDF(cube_nh.data.flatten(),same_bins)
 sat_bins, sat_pdf=PDF(grid_z1.flatten(),same_bins)
 plt.figure()
 
-plt.plot(bins, pdf,label='ALL_ICE_PROC R=%1.2f'%np.corrcoef(pdf[20:],sat_pdf[20:])[0,1])
+plt.plot(bins, pdf,label='ALL_ICE_PROC R=%1.2f'%np.corrcoef(pdf,sat_pdf)[0,1])
+plt.plot(bins_csb, pdf_csb,label='BASE (CS) R=%1.2f'%np.corrcoef(pdf_csb,sat_pdf)[0,1])
+
 #plt.plot(bins_con, pdf_con,label='con R=%1.2f'%np.corrcoef(pdf_con[20:],sat_pdf[20:])[0,1])
-plt.plot(bins_old, pdf_old,label='OLD_MICROPHYSICS R=%1.2f'%np.corrcoef(pdf_old[20:],sat_pdf[20:])[0,1])
+plt.plot(bins_old, pdf_old,label='OLD_MICROPHYSICS R=%1.2f'%np.corrcoef(pdf_old,sat_pdf)[0,1])
 #plt.plot(bins_nh, pdf_nh,label='no hallet R=%1.2f'%np.corrcoef(pdf_nh[20:],sat_pdf[20:])[0,1])
-plt.plot(bins_2m, pdf_2m,label='2_ORD_MORE R=%1.2f'%np.corrcoef(pdf_2m[20:],sat_pdf[20:])[0,1])
-plt.plot(bins_3ord, pdf_3ord,label='3_ORD_LESS R=%1.2f'%np.corrcoef(pdf_3ord[20:],sat_pdf[20:])[0,1])
+plt.plot(bins_2m, pdf_2m,label='2_ORD_MORE R=%1.2f'%np.corrcoef(pdf_2m,sat_pdf)[0,1])
+plt.plot(bins_3ord, pdf_3ord,label='3_ORD_LESS R=%1.2f'%np.corrcoef(pdf_3ord,sat_pdf)[0,1])
 plt.plot(sat_bins, sat_pdf,label='Satelite (CERES)')
 plt.ylim(0,0.01)
 plt.legend()

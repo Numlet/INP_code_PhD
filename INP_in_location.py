@@ -38,13 +38,14 @@ lon_point=1.32
 lat_point=53.5
 title='Leeds'
 
+lon_point=jl.mace_head_latlon_values[1]
+lat_point=jl.mace_head_latlon_values[0]
+title='Mace Head'
+
 lon_point=8
 lat_point=-52
 title='Southern Ocean grid'
 
-lon_point=jl.mace_head_latlon_values[1]
-lat_point=jl.mace_head_latlon_values[0]
-title='Mace Head'
 INP_marine_alltemps_monthly=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY/INP_marine_alltemps.npy')#m3
 INP_feldspar_alltemps_monthly=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e6#m3
 INP_feldspar_alltemps_daily=np.load('/nfs/a201/eejvt/MARINE_PARAMETERIZATION/DAILY/INP_feldext_alltemps_daily.npy')*1e6#m3
@@ -62,15 +63,15 @@ ed=243#sSeptember
 sd=243#sSeptember
 ed=304#eNovember
 ed=304#e2ndNovember
-sd=0#sSeptember
-ed=360#e2ndNovember
+sd=0#sjanuary
+ed=364#edicember
 ilat=jl.find_nearest_vector_index(jl.lat,lat_point)
 ilon=jl.find_nearest_vector_index(jl.lon180,lon_point)
 column_feldspar=INP_feldspar_alltemps[:,:,ilat,ilon,:]
 column_marine=INP_marine_alltemps[:,:,ilat,ilon,:]
 temps=np.arange(-37,1,1)
 temps=temps[::-1]
-top_lev=20
+top_lev=25
 
 #%%
 
@@ -78,13 +79,25 @@ plt.figure()
 
 column_total=column_feldspar+column_marine
 
-plt.fill_between(temps[25:],column_feldspar[25:,top_lev,sd:ed].min(axis=-1),column_feldspar[25:,30,sd:ed].max(axis=-1),color='r',alpha=0.3)
-plt.fill_between(temps[5:26],column_feldspar[5:26,top_lev,sd:ed].min(axis=-1),column_feldspar[5:26,30,sd:ed].max(axis=-1),color='r',label='K-feldspar')
-plt.fill_between(temps[7:],column_marine[7:,top_lev,sd:ed].min(axis=-1),column_marine[7:,30,sd:ed].max(axis=-1),color='g',label='Marine Organics')
-plt.fill_between(temps[:6],column_feldspar[:6,top_lev,sd:ed].min(axis=-1),column_feldspar[:6,30,sd:ed].max(axis=-1),color='r',alpha=0.3)
-plt.fill_between(temps[:8],column_marine[:8,top_lev,sd:ed].min(axis=-1),column_marine[:8,30,sd:ed].max(axis=-1),color='g',alpha=0.3)
-#plt.fill_between(temps,column_total[:,top_lev,sd:ed].min(axis=-1),column_total[:,top_lev,sd:ed].max(axis=-1),color='k',alpha=0.4,label='Total range')
-#plt.plot(temps,column_total[:,top_lev,sd:ed].mean(axis=-1),color='k',lw=3,label='Total mean')
+plt.fill_between(temps[25:],column_feldspar[25:,top_lev,sd:ed].min(axis=-1),
+                 column_feldspar[25:,30,sd:ed].max(axis=-1),color='r',alpha=0.3)
+
+plt.fill_between(temps[5:26],column_feldspar[5:26,top_lev,sd:ed].min(axis=-1),
+                 column_feldspar[5:26,30,sd:ed].max(axis=-1),color='r',label='K-feldspar')
+
+plt.fill_between(temps[7:],column_marine[7:,top_lev,sd:ed].min(axis=-1),
+                 column_marine[7:,30,sd:ed].max(axis=-1),color='g',label='Marine Organics')
+
+plt.fill_between(temps[:6],column_feldspar[:6,top_lev,sd:ed].min(axis=-1),
+                 column_feldspar[:6,30,sd:ed].max(axis=-1),color='r',alpha=0.3)
+
+plt.fill_between(temps[:8],column_marine[:8,top_lev,sd:ed].min(axis=-1),
+                 column_marine[:8,30,sd:ed].max(axis=-1),color='g',alpha=0.3)
+
+
+plt.fill_between(temps,column_total[:,top_lev,sd:ed].min(axis=-1),
+column_total[:,30,sd:ed].max(axis=-1),color='k',alpha=0.4,label='Total range')
+plt.plot(temps,column_total[:,top_lev,sd:ed].mean(axis=-1),color='k',lw=3,label='Total mean')
 
 
 plt.title(title)
@@ -98,9 +111,72 @@ plt.show()
 
 
 
+INP_max=column_total[:,30,sd:ed].max(axis=-1)
+INP_mean=column_total[:,top_lev,sd:ed].mean(axis=-1)
+INP_min=column_total[:,top_lev,sd:ed].min(axis=-1)
+#%%
+plt.plot(temps,INP_max,'o')
+plt.plot(temps,INP_mean,'o')
+plt.plot(temps,INP_min,'o')
+plt.yscale('log')
+
+def demott(T,N):
+    a_demott=5.94e-5
+    b_demott=3.33
+    c_demott=0.0264
+    d_demott=0.0033
+    Tp01=0.01-T
+    dN_imm=1e3*a_demott*(Tp01)**b_demott*(N)**(c_demott*Tp01+d_demott)
+    return dN_imm
+def meyers_param(T,units_cm=0):
+    a=-0.639
+    b=0.1296
+    return np.exp(a+b*(100*(jl.saturation_ratio_C(T)-1)))#L-1
+def meyers_CASIM(T):
+    return np.exp(0.4108-0.262*T)
+def func(x,a,b,c,d,e,f):
+    return a-b*x+c*x**2+d*x**3+e*x**4+f*x**5
+    
+def func_log(x,a,b):
+    return np.exp(a)*np.exp(-b * x)
+
+from scipy import stats
+
+
+from scipy.optimize import curve_fit
+
+def fit_to_INP(INP,function,temps=temps):
+    
+    T=temps[:]
+
+    popt,pcov = curve_fit(func, T, INP)
+    perr = np.sqrt(np.diag(pcov))
+    ci = 0.95
+    pp = (1. + ci) / 2.
+    nstd = stats.norm.ppf(pp)
+    popt_up = popt + nstd * perr
+    popt_dw = popt - nstd * perr
+
+    INP_fitted=function(temps,*popt)
+    INP_low=function(T,*popt_dw)
+    INP_high=function(T,*popt_up)
+    return popt,pcov,INP_fitted,INP_low,INP_high
+
+popt,pcov,INP_fitted,_,_=fit_to_INP(np.log(INP_min),func)
+print INP_fitted
+print popt
 
 
 
+plt.plot(temps,np.exp(INP_fitted),'k')
+plt.grid()
+plt.plot(temps,meyers_param(temps)*1e3,'b',label='mine')
+plt.plot(temps,demott(temps,100),'r',label='demott')
+#plt.plot(temps,meyers_param(temps)*1e3,'r',label='mine')
+#),
+
+plt.plot(temps,meyers_CASIM(temps),'g',label='casim')
+plt.legend(loc='best')
 #%%
 plt.figure()
 
