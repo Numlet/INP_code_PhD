@@ -142,6 +142,8 @@ cube_con = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/BASE_C
 #cube_nh = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/NO_HALLET/L1/','LWP'))[0]
 cube_ni = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/NOICE/L1/','LWP'))[0]
 
+cube_csb = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/BASE/L1/','LWP'))[0]
+
 
 
 
@@ -174,6 +176,7 @@ cube=cube[12,]
 #cube_nh=cube_nh[13,:,:]
 cube_3ord=cube_3ord[13,]
 cube_2m=cube_2m[13,]
+cube_csb=cube_csb[13,]
 cube_con=cube_con[13,:,:]
 #cube_oldm=cube_oldm[13,:,:]
 model_lons,model_lats=unrotated_grid(cube)
@@ -189,14 +192,14 @@ grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 #plt.figure()
 plt.figure(figsize=(15,13))
 levels=np.arange(0,0.45,0.05).tolist()
-plt.subplot(221)
+plt.subplot(321)
 plt.contourf(X,Y,grid_z1,levels, origin='lower',cmap=cm)
 plt.title('Satellite (AMRS2)')
 cb=plt.colorbar()
 cb.set_label('LWP $kg/m^2$')
 #           fontsize=14)
 
-plt.subplot(222)
+plt.subplot(322)
 plt.title('ALL_ICE_PROC')
 plt.contourf(X,Y,cube.data,levels, origin='lower',cmap=cm)
 
@@ -211,16 +214,24 @@ cb=plt.colorbar()
 cb.set_label('LWP $kg/m^2$')
 #plt.contourf(X,Y,grid_z0,levels, origin='lower')
 #plt.title('Nearest')
-plt.subplot(223)
+plt.subplot(323)
 #plt.title('BASE_CONTACT')
 #plt.contourf(X,Y,cube_con.data,levels, origin='lower',cmap=cm)
 plt.title('2_ORD_MORE')
 plt.contourf(X,Y,cube_2m.data,levels, origin='lower',cmap=cm)
 cb=plt.colorbar()
 cb.set_label('LWP $kg/m^2$')
-plt.subplot(224)
+plt.subplot(324)
 plt.title('3_ORD_LESS')
 plt.contourf(X,Y,cube_3ord.data,levels, origin='lower',cmap=cm)
+#plt.contourf(X,Y,grid_z2,levels, origin='lower')
+#plt.title('Cubic')
+#plt.gcf().set_size_inches(6, 6)
+cb=plt.colorbar()
+cb.set_label('LWP $kg/m^2$')
+plt.subplot(325)
+plt.title('BASE (CS)')
+plt.contourf(X,Y,cube_csb.data,levels, origin='lower',cmap=cm)
 #plt.contourf(X,Y,grid_z2,levels, origin='lower')
 #plt.title('Cubic')
 #plt.gcf().set_size_inches(6, 6)
@@ -260,15 +271,17 @@ bins,pdf=PDF(cube.data.flatten(),same_bins)
 bins_con,pdf_con=PDF(cube_con.data.flatten(),same_bins)
 #bins_old,pdf_old=PDF(data_old.flatten(),same_bins)
 bins_3ord,pdf_3ord=PDF(cube_3ord.data.flatten(),same_bins)
+bins_csb,pdf_csb=PDF(cube_csb.data.flatten(),same_bins)
 bins_2m,pdf_2m=PDF(cube_2m.data.flatten(),same_bins)
 #bins_nh,pdf_nh=PDF(cube_nh.data.flatten(),same_bins)
 sat_bins, sat_pdf=PDF(grid_z1.flatten(),same_bins)
-plt.figure()
+plt.figure(figsize=(15,10))
 
 plt.plot(bins, pdf,label='ALL_ICE_PROC R=%1.2f'%np.corrcoef(pdf[:],sat_pdf[:])[0,1])
 #plt.plot(bins_con, pdf_con,label='con R=%1.2f'%np.corrcoef(pdf_con[:],sat_pdf[:])[0,1])
 #plt.plot(bins_old, pdf_old,label='old R=%1.2f'%np.corrcoef(pdf_old[20:],sat_pdf[20:])[0,1])
 #plt.plot(bins_nh, pdf_nh,label='no hallet R=%1.2f'%np.corrcoef(pdf_nh[20:],sat_pdf[20:])[0,1])
+plt.plot(bins_csb, pdf_csb,label='BASE(CS) R=%1.2f'%np.corrcoef(pdf_2m[:],sat_pdf[:])[0,1])
 plt.plot(bins_2m, pdf_2m,label='2_ORD_LESS R=%1.2f'%np.corrcoef(pdf_2m[:],sat_pdf[:])[0,1])
 plt.plot(bins_3ord, pdf_3ord,label='3_ORD_LESS R=%1.2f'%np.corrcoef(pdf_3ord[:],sat_pdf[:])[0,1])
 plt.plot(sat_bins, sat_pdf,label='Satellite')

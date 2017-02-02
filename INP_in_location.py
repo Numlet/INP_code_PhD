@@ -71,7 +71,7 @@ column_feldspar=INP_feldspar_alltemps[:,:,ilat,ilon,:]
 column_marine=INP_marine_alltemps[:,:,ilat,ilon,:]
 temps=np.arange(-37,1,1)
 temps=temps[::-1]
-top_lev=25
+top_lev=20
 
 #%%
 
@@ -162,7 +162,7 @@ def fit_to_INP(INP,function,temps=temps):
     INP_high=function(T,*popt_up)
     return popt,pcov,INP_fitted,INP_low,INP_high
 
-popt,pcov,INP_fitted,_,_=fit_to_INP(np.log(INP_min),func)
+popt,pcov,INP_fitted,_,_=fit_to_INP(np.log(INP_max),func)
 print INP_fitted
 print popt
 
@@ -170,13 +170,14 @@ print popt
 
 plt.plot(temps,np.exp(INP_fitted),'k')
 plt.grid()
-plt.plot(temps,meyers_param(temps)*1e3,'b',label='mine')
-plt.plot(temps,demott(temps,100),'r',label='demott')
+plt.plot(temps,meyers_param(temps)*1e3,'b',label='Meyers')
+plt.plot(temps[1:],demott(temps,50)[1:],'r',label='DeMott')
 #plt.plot(temps,meyers_param(temps)*1e3,'r',label='mine')
 #),
-
-plt.plot(temps,meyers_CASIM(temps),'g',label='casim')
-plt.legend(loc='best')
+plt.ylabel('m-3')
+#plt.plot(temps,meyers_CASIM(temps),'g',label='casim')
+plt.legend(loc='lower left')
+plt.savefig(jl.home_dir+'different_params.png')
 #%%
 plt.figure()
 

@@ -141,29 +141,56 @@ temperature._var_name='temperature'
 
 #%%
 
-cube_bl = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s00i025_atmosphere_boundary_layer_thickness'))[0]
-cube_l = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s00i254'))[0]
-cube_i = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s00i012'))[0]
-plt.imshow(cube_bl.data[13,])
-plt.colorbar()
-#%%
-#print cube
-data=cube_l.data[:,:,:,:]+cube_i.data[:,:,:,:]
-#data[data==0]=999
-data[data<1e-6]=0
-temp_cloud=temperature.data
-temp_cloud[data==0]=999
-temp_cloud.min(axis=1)
-plt.imshow(temp_cloud.min(axis=1)[13])
-plt.colorbar()
-#%%
-cloud_top_temp=temp_cloud.min(axis=1)
-cloud_top_temp[cloud_top_temp==999]=np.nan
-#cloud_top_temp[cloud_top_temp<258]=np.nan
-plt.imshow(cloud_top_temp[13]-273.15)
+cloud_top= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s09i223'))[0]
 
-plt.colorbar()
-plt.show()
+def read_and_calc_CTT(path):
+    cube_l = iris.load(ukl.Obtain_name(path+'/All_time_steps/','m01s00i254'))[0]
+    cube_i = iris.load(ukl.Obtain_name(path+'/All_time_steps/','m01s00i012'))[0]
+    path_to_temp=ukl.Obtain_name(path+'/L1/','temperature')
+    if len(path_to_temp)!=0:
+        temperature=iris.load(path_to_temp)[0]
+    else:
+        temperature=iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/L1/','temperature'))[0]
+        print path
+        print 'temperature read from 2_ORD_MORE run'
+    data=cube_l.data[:,:,:,:]+cube_i.data[:,:,:,:]
+    data[data<1e-6]=0
+    temp_cloud=temperature.data
+    temp_cloud[data==0]=999
+    temp_cloud=temp_cloud.min(axis=1)
+    print temp_cloud.shape
+    return temp_cloud
+
+all_ice_proc = read_and_calc_CTT('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/')
+base_cs= read_and_calc_CTT('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/BASE')
+
+
+
+
+#
+#cube_l = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s00i254'))[0]
+#cube_i = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s00i012'))[0]
+#cube_bl = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s00i025_atmosphere_boundary_layer_thickness'))[0]
+#plt.imshow(cube_bl.data[13,])
+#plt.colorbar()
+##%%
+##print cube
+#data=cube_l.data[:,:,:,:]+cube_i.data[:,:,:,:]
+##data[data==0]=999
+#data[data<1e-6]=0
+#temp_cloud=temperature.data
+#temp_cloud[data==0]=999
+#temp_cloud.min(axis=1)
+#plt.imshow(temp_cloud.min(axis=1)[13])
+#plt.colorbar()
+##%%
+#cloud_top_temp=temp_cloud.min(axis=1)
+#cloud_top_temp[cloud_top_temp==999]=np.nan
+##cloud_top_temp[cloud_top_temp<258]=np.nan
+#plt.imshow(cloud_top_temp[13]-273.15)
+#
+#plt.colorbar()
+#plt.show()
 
 
 #%%
@@ -171,7 +198,7 @@ coord=np.zeros([len(sat_lon),2])
 coord[:,0]=sat_lon
 coord[:,1]=sat_lat
 cm=plt.cm.RdBu_r
-model_lons,model_lats=unrotated_grid(cube_l)
+model_lons,model_lats=unrotated_grid(cloud_top)
 #model_lons=np.linspace(-5,20,500)
 X,Y=np.meshgrid(model_lons, model_lats)
 #%%
@@ -188,13 +215,13 @@ grid_z1 = sc.interpolate.griddata(coord, sat_data, (X,Y), method='linear')
 grid_z1[np.isnan(grid_z1)]=0
 
 #%%
-plt.figure(figsize=(15,13))
-levels=np.arange(0,2000,100).tolist()
-plt.subplot(221)
-plt.contourf(X,Y,cube_bl.data[12,],levels, origin='lower',cmap=cm)
-plt.title('All_ice_proc')
-cb=plt.colorbar()
-cb.set_label('boundary layer height (m)')
+#plt.figure(figsize=(15,13))
+#levels=np.arange(0,2000,100).tolist()
+#plt.subplot(221)
+#plt.contourf(X,Y,cube_bl.data[12,],levels, origin='lower',cmap=cm)
+#plt.title('All_ice_proc')
+#cb=plt.colorbar()
+#cb.set_label('boundary layer height (m)')
 #%%
 
 #plt.figure()
@@ -209,7 +236,13 @@ cb.set_label('Cloud top temperature')
 plt.subplot(222)
 #plt.subplot(223)
 plt.title('ALL_ICE_PROC')
-plt.contourf(X,Y,cloud_top_temp[12],levels, origin='lower',cmap=cm)
+plt.contourf(X,Y,all_ice_proc[12],levels, origin='lower',cmap=cm)
+cb=plt.colorbar()
+cb.set_label('Cloud top temperature')
+plt.subplot(223)
+#plt.subplot(223)
+plt.title('BASE CS')
+plt.contourf(X,Y,base_cs[12],levels, origin='lower',cmap=cm)
 cb=plt.colorbar()
 cb.set_label('Cloud top temperature')
 #plt.subplot(223)
@@ -231,16 +264,18 @@ same_bins=np.linspace(250,273,50)
 plt.figure(figsize=(15,13))
 
 
-bins,pdf=PDF(cloud_top_temp[12].flatten(),same_bins)
+bins,pdf=PDF(all_ice_proc[12].flatten(),same_bins)
+bins_csb,pdf_csb=PDF(base_cs[12].flatten(),same_bins)
 #bins_con,pdf_con=PDF(cube_con[13].data.flatten()*0.304,same_bins)
 #bins_old,pdf_old=PDF(data_old[13].flatten()*0.304,same_bins)
 #bins_3ord,pdf_3ord=PDF(cube_3ord[13].data.flatten()*0.304,same_bins)
 #bins_2m,pdf_2m=PDF(cube_2m[13].data.flatten()*0.304,same_bins)
 #bins_nh,pdf_nh=PDF(cube_nh.data.flatten(),same_bins)
 sat_bins, sat_pdf=PDF(grid_z1.flatten(),same_bins)
-plt.figure()
+#plt.figure()
 
-plt.plot(bins, pdf,label='BASE R=%1.2f'%np.corrcoef(pdf[:],sat_pdf[:])[0,1])
+plt.plot(bins, pdf,label='ALL_ICE_PROC R=%1.2f'%np.corrcoef(pdf[:],sat_pdf[:])[0,1])
+plt.plot(bins_csb, pdf_csb,label='BASE CS R=%1.2f'%np.corrcoef(pdf_csb[:],sat_pdf[:])[0,1])
 #plt.plot(bins_con, pdf_con,label='con R=%1.2f'%np.corrcoef(pdf_con[:],sat_pdf[:])[0,1])
 #plt.plot(bins_old, pdf_old,label='old R=%1.2f'%np.corrcoef(pdf_old[20:],sat_pdf[20:])[0,1])
 #plt.plot(bins_nh, pdf_nh,label='no hallet R=%1.2f'%np.corrcoef(pdf_nh[20:],sat_pdf[20:])[0,1])
