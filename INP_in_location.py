@@ -114,6 +114,9 @@ INP_max=column_total[:,30,sd:ed].max(axis=-1)
 INP_mean=column_total[:,top_lev,sd:ed].mean(axis=-1)
 INP_min=column_total[:,top_lev,sd:ed].min(axis=-1)
 #%%
+
+
+plt.figure()
 plt.plot(temps,INP_max,'o')
 plt.plot(temps,INP_mean,'o')
 plt.plot(temps,INP_min,'o')
@@ -170,13 +173,17 @@ print popt
 plt.plot(temps,np.exp(INP_fitted),'k')
 plt.grid()
 plt.plot(temps,meyers_param(temps)*1e3,'b',label='Meyers')
-n05=0.39
-plt.plot(temps[1:],demott(temps,n05)[1:],'r--',label='DeMott')
-plt.plot(temps[1:],1e2*demott(temps,n05)[1:],'g--',label='DeMott 2ord')
-plt.plot(temps[1:],1e1*demott(temps,n05)[1:],'g--',label='DeMott 1ord')
-plt.plot(temps[1:],1e-1*demott(temps,n05)[1:],'y--',label='DeMott -1ord')
-plt.plot(temps[1:],1e-2*demott(temps,n05)[1:],'y--',label='DeMott -2ord')
-plt.plot(temps[1:],1e-3*demott(temps,n05)[1:],'y--',label='DeMott -3ord')
+n05=56000*1e-6
+n05_GLOMAP=21.26#cm-3 surface SO 
+n05_bug_meters=56000
+plt.plot(temps[1:],demott(temps,n05)[1:],'r',label='DeMott 56000*1e-6 (cm-3)')
+plt.plot(temps[1:],demott(temps,n05_GLOMAP)[1:],'g',label='DeMott GLOMAP (21.26 cm-3)')
+plt.plot(temps[1:],demott(temps,n05_bug_meters)[1:],'y',label='DeMott CASIM bug metres (56000cm-3)')
+#plt.plot(temps[1:],1e2*demott(temps,n05)[1:],'g--',label='DeMott 2ord')
+#plt.plot(temps[1:],1e1*demott(temps,n05)[1:],'g--',label='DeMott 1ord')
+#plt.plot(temps[1:],1e-1*demott(temps,n05)[1:],'y--',label='DeMott -1ord')
+#plt.plot(temps[1:],1e-2*demott(temps,n05)[1:],'y--',label='DeMott -2ord')
+#plt.plot(temps[1:],1e-3*demott(temps,n05)[1:],'y--',label='DeMott -3ord')
 #plt.plot(temps,meyers_param(temps)*1e3,'r',label='mine')
 #),
 plt.ylabel('m-3')

@@ -66,7 +66,7 @@ def meyers_param(T,units_cm=0):
 ss_vol=s1.tot_mc_dust_mm_mode/rhocomp[4]
 ss_vol=s1.tot_mc_su_mm_mode[:,:,:,:,:]/rhocomp[0]#+s1.tot_mc_ss_mm_mode[:,:,:,:,:]/rhocomp[3]
 ss_vol=s1.tot_mc_dust_mm_mode/rhocomp[4]+s1.tot_mc_feldspar_mm_mode[:,:,:,:,:]/rhocomp[6]
-    
+ss_vol=+s1.tot_mc_ss_mm_mode[:,:,:,:,:]/rhocomp[3]
 modes_vol=volumes_of_modes(s1)#m3
 volfrac_ss=ss_vol/modes_vol
 ss_particles_ext=volfrac_ss*s1.st_nd
@@ -79,6 +79,7 @@ partial_acc=s1.st_nd[2,:,:,:,:]-jl.lognormal_cummulative(s1.st_nd[2,:,:,:,:],250
 
 #n05=s1.st_nd[3,:,:,:,:]+partial_acc#+s1.st_nd[6,:,:,:,:]#-ss_particles_05-ss_particles_05
 n05=s1.st_nd[3,:,:,:,:]+partial_acc#-ss_particles_05#+s1.st_nd[6,:,:,:,:]#-ss_particles_05
+#%%
 jl.plot(ss_particles_05.mean(axis=-1)[30,:,:]/n05.mean(axis=-1)[30,:,:],clevs=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1],cblabel='Fraction of SS particles')
 jl.plot(ss_particles_05.mean(axis=-1)[30,:,:]/n05.mean(axis=-1)[30,:,:],clevs=np.logspace(-4,1,6).tolist(),cblabel='Fraction of SS particles')
 jl.plot(partial_acc.mean(axis=-1)[30,:,:]/s1.st_nd[3,].mean(axis=-1)[30,:,:],clevs=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1])
