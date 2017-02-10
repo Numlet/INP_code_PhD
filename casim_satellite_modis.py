@@ -79,10 +79,12 @@ SDS_NAME  = 'Cloud_Water_Path'
 SDS_NAME  = 'Cloud_Water_Path_16'
 SDS_NAME  = 'Cloud_Top_Temperature'
 SDS_NAME  = 'Cloud_Top_Height'
+SDS_NAME  = 'cloud_top_height_1km'
+SDS_NAME  = 'Cloud_Mask_1km'
 hdf  =SD.SD(path+'modis/'+'MYD06_L2.A2014343.1325.006.2014344210847.hdf')
 #print hdf.datasets().keys()
 for k in hdf.datasets().keys():
-    if 'Tem' in k:
+    if 'eight' in k:
         print k
 
 sds = hdf.select(SDS_NAME)

@@ -30,9 +30,6 @@ lat_point=13.05
 lon_point=-59.36
 title='Barbados'
 
-lat_point=jl.cape_verde_latlon_values[0]
-lon_point=jl.cape_verde_latlon_values[1]
-title='Cape Verde\'s marine boundary layer'
 
 lon_point=1.32
 lat_point=53.5
@@ -44,7 +41,9 @@ title='Mace Head'
 
 lon_point=8
 lat_point=-52
+
 title='Southern Ocean grid'
+
 
 INP_marine_alltemps_monthly=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY/INP_marine_alltemps.npy')#m3
 INP_feldspar_alltemps_monthly=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e6#m3
@@ -171,7 +170,13 @@ print popt
 plt.plot(temps,np.exp(INP_fitted),'k')
 plt.grid()
 plt.plot(temps,meyers_param(temps)*1e3,'b',label='Meyers')
-plt.plot(temps[1:],demott(temps,50)[1:],'r',label='DeMott')
+n05=0.39
+plt.plot(temps[1:],demott(temps,n05)[1:],'r--',label='DeMott')
+plt.plot(temps[1:],1e2*demott(temps,n05)[1:],'g--',label='DeMott 2ord')
+plt.plot(temps[1:],1e1*demott(temps,n05)[1:],'g--',label='DeMott 1ord')
+plt.plot(temps[1:],1e-1*demott(temps,n05)[1:],'y--',label='DeMott -1ord')
+plt.plot(temps[1:],1e-2*demott(temps,n05)[1:],'y--',label='DeMott -2ord')
+plt.plot(temps[1:],1e-3*demott(temps,n05)[1:],'y--',label='DeMott -3ord')
 #plt.plot(temps,meyers_param(temps)*1e3,'r',label='mine')
 #),
 plt.ylabel('m-3')
