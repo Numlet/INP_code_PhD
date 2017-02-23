@@ -79,7 +79,7 @@ def unrotated_grid(cube):
     return lons,lats
 import iris
 #import pprint
-Nd=iris.load('/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/modis/Nd_MYD06_L2.A2014343.1325.006.2014344210847.hdf.nc')[0]
+Nd=iris.load('/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/modis/dan/Nd2_MYD06_L2.A2014343.1325.006.2014344210847.hdf.nc')[0]
 
 
 path='/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/'
@@ -94,7 +94,7 @@ lat = sds.get()
 SDS_NAME  = 'Longitude'
 sds = hdf.select(SDS_NAME)
 lon = sds.get()
-plt.contourf(lon,lat,Nd.data)
+#plt.contourf(lon,lat,Nd.data)
 
 #%%
 
@@ -105,6 +105,10 @@ sat_data=Nd.data.flatten()
 #    print att
 #%%
 cube_cdnc= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/L1/','Cloud_droplet_concentratio_at_maximum_cloud_water_content'))[0]
+cube_gloprof= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLOMAP_PROFILE_DM/L1/','Cloud_droplet_concentratio_at_maximum_cloud_water_content'))[0]
+cube_gl_csed= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HIGH_CSED/L1/','Cloud_droplet_concentratio_at_maximum_cloud_water_content'))[0]
+cube_gl_low_csed= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_LOW_CSED/L1/','Cloud_droplet_concentratio_at_maximum_cloud_water_content'))[0]
+cube_csb = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/BASE/L1/','Cloud_droplet_concentratio_at_maximum_cloud_water_content'))[0]
 #cube_cdnc= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/L1/','Cloud_droplet_concentratio_at_maximum_cloud_water_content'))[0]
 #cube_cdnc= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/L1/','Cloud_droplet_concentratio_at_maximum_cloud_water_content'))[0]
 #cube_cdnc= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/L1/','loud droplet number concentration'))[0]
@@ -119,7 +123,6 @@ cube_con = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/BASE_C
 #cube_nh = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/NO_HALLET/L1/','LWP'))[0]
 cube_ni = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/NOICE/L1/','LWP'))[0]
 
-cube_csb = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/BASE/L1/','Cloud_droplet_concentratio_at_maximum_cloud_water_content'))[0]
 cube_csbm = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/MEYERS/L1/','LWP'))[0]
 cube_m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/MEYERS/L1/','LWP'))[0]
 
@@ -155,7 +158,10 @@ grid_z1[np.isnan(grid_z1)]=0
 runs_dict=OrderedDict()
 runs_dict['Satellite']=grid_z1
 runs_dict['ALL_ICE_PROC']=cube_cdnc[12].data*1e-6
-#runs_dict['BASE (CS)']=cube_csb[13].data*1e-6
+runs_dict['BASE (CS)']=cube_csb[13].data*1e-6
+runs_dict['GLOMAP_PROFILE']=cube_gloprof[13].data*1e-6
+runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data*1e-6
+runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data*1e-6
 
          
 #runs_dict['BASE (CS)']=cube_csb[13].data

@@ -108,7 +108,9 @@ cube_ni = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAI
 cube_csb = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/BASE/L1/','LWP'))[0]
 cube_csbm = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/MEYERS/L1/','LWP'))[0]
 cube_m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/MEYERS/L1/','LWP'))[0]
-
+cube_gloprof= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLOMAP_PROFILE_DM/L1/','LWP'))[0]
+cube_gl_csed=  iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HIGH_CSED/L1/','LWP'))[0]
+cube_gl_low_csed=  iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_LOW_CSED/L1/','LWP'))[0]
 
 
 
@@ -151,13 +153,16 @@ grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 
 runs_dict=OrderedDict()
 runs_dict['Satellite (AMSR2)']=grid_z1
-runs_dict['ALL_ICE_PROC']=cube[12].data
-runs_dict['BASE (CS)']=cube_csb[13].data
-runs_dict['MEYERS (CS)']=cube_csbm[13].data
-runs_dict['MEYERS']=cube_m[13].data
-runs_dict['3_ORD_LESS']=cube_3ord[13].data
-runs_dict['2_ORD_MORE']=cube_2m[13].data
+#runs_dict['ALL_ICE_PROC']=cube[12].data
+#runs_dict['BASE (CS)']=cube_csb[13].data
+#runs_dict['MEYERS (CS)']=cube_csbm[13].data
+#runs_dict['MEYERS']=cube_m[13].data
+#runs_dict['3_ORD_LESS']=cube_3ord[13].data
+#runs_dict['2_ORD_MORE']=cube_2m[13].data
 
+runs_dict['GLOPROF']=cube_gloprof[13].data
+runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data
+runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data
 
 levels=np.arange(0,0.45,0.05).tolist()
 same_bins=np.linspace(0,0.5,100)

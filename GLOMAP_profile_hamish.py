@@ -1,3 +1,11 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Feb 21 10:22:02 2017
+
+@author: eejvt
+"""
+
 # -*- coding: utf-8 -*-
 """
 Spyder Editor
@@ -67,28 +75,40 @@ ss_particles_05=ss_particles_ext[3,]+(ss_particles_ext[2,]-jl.lognormal_cummulat
 partial_acc=s1.st_nd[2,:,:,:,:]-jl.lognormal_cummulative(s1.st_nd[2,:,:,:,:],250e-9,s1.rbardry[2,:,:,:,:],s1.sigma[2])
 n05=s1.st_nd[3,:,:,:,:]+partial_acc-ss_particles_05#+s1.st_nd[6,:,:,:,:]#-ss_particles_05
 
+            
+            
+            
 #%%
+
 
 #CCN=s1.st_nd[2,:,:,:,:]+s1.st_nd[3,:,:,:,:]+s1.st_nd[1,:,:,:,:]+s1.st_nd[0,:,:,:,:]#+s1.st_nd[5,:,:,:,:]+s1.st_nd[6,:,:,:,:]
 #print CCN[:,50,3,0]
-
-month=7
-for month in range(12):
-    print month
-    for i in [0,1,2,3]:
-        print 'nd mode:',i
-        print s1.st_nd[i,30,50,3,month]
-        print 'ccn1',s1.ccn_1[30,50,3,month]
-        print 'ccn2',s1.ccn_2[30,50,3,month]
-#        print s1.ccn_3[30,50,3,month]
-#        print s1.ccn_4[30,50,3,month]
+#
+#month=7
+#for month in range(12):
+#    print month
+#    for i in [0,1,2,3]:
+#        print 'nd mode:',i
+#        print s1.st_nd[i,30,50,3,month]
+#        print 'ccn1',s1.ccn_1[30,50,3,month]
+#        print 'ccn2',s1.ccn_2[30,50,3,month]
+##        print s1.ccn_3[30,50,3,month]
+##        print s1.ccn_4[30,50,3,month]
 #%%
+ham_run=jl.readsav('/nfs/a201/earhg/CLOUD/mode-CCNnuc-savs/modeEimear_sizedistros_PD_ED_290216_2008_CCN03.sav')
+md=np.swapaxes(ham_run['md_time'],0,-1).sum(axis=-2)
+nd=np.swapaxes(ham_run['nd_time'],0,-1)
+avc=6.022e23
+#totdrymass[*,*,*]=totdrymass[*,*,*]+nd[imode,*,*,*]*md[imode,icp,*,*,*]/avc ; in kg/cc
+total_mass=nd*md/avc*10**15#ug/m3
+tot_number=np.copy(nd)#cm-3
 
-month=7
+
+          
+          
+          
+month=0
 GLOMAP_pressures=s1.pl_m[:,ilat,ilon,month]
-
-total_mass=s1.tot_mc_dust_mm_mode+s1.tot_mc_feldspar_mm_mode+\
-s1.tot_mc_su_mm_mode+s1.tot_mc_ss_mm_mode+s1.tot_mc_oc_mm_mode+s1.tot_mc_bc_mm_mode
 
 
 GLOMAP_pressures[30]=100000
@@ -121,13 +141,13 @@ acc_mass_casim=f_acc_mass(casim_pressures)
 f_aitken_mass = sc.interpolate.interp1d(GLOMAP_pressures, total_mass[1,:,ilat,ilon,month])
 aitken_mass_casim=f_aitken_mass(casim_pressures)
 
-f_coarse_number = sc.interpolate.interp1d(GLOMAP_pressures, s1.st_nd[3,:,ilat,ilon,month])
+f_coarse_number = sc.interpolate.interp1d(GLOMAP_pressures, tot_number[3,:,ilat,ilon,month])
 coarse_number_casim=f_coarse_number(casim_pressures)
 
-f_acc_number = sc.interpolate.interp1d(GLOMAP_pressures, s1.st_nd[2,:,ilat,ilon,month])
+f_acc_number = sc.interpolate.interp1d(GLOMAP_pressures, tot_number[2,:,ilat,ilon,month])
 acc_number_casim=f_acc_number(casim_pressures)
 
-f_aitken_number = sc.interpolate.interp1d(GLOMAP_pressures, s1.st_nd[1,:,ilat,ilon,month])
+f_aitken_number = sc.interpolate.interp1d(GLOMAP_pressures, tot_number[1,:,ilat,ilon,month])
 aitken_number_casim=f_aitken_number(casim_pressures)
 
 f_n05 = sc.interpolate.interp1d(GLOMAP_pressures, n05[:,ilat,ilon,month])
@@ -156,7 +176,7 @@ aerosols_tracers=[33001,33002,33003,33004,33005,33006,33005,33006,33007,33008,33
 #33009   insoluble accumulation mode mass
 #33010   insoluble accumulation mode number
 
-with open("GLOMAP_profile_low_aerosol_v1.nml", "w") as text_file:
+with open("GLOMAP_profile_high_aerosol_hamish.nml", "w") as text_file:
     for i in range(len(aerosols_tracers)):
         text_file.write("%i\n" % aerosols_tracers[i])
         for ilev in range(len(casim_pressures)):

@@ -32,7 +32,6 @@ from collections import OrderedDict
 runs_dict=OrderedDict()
 
 
-
 matplotlib.rc('font', **font)
 
 
@@ -67,6 +66,7 @@ t13=(datetime.datetime(2014,12,9,14)-datetime.datetime(1970,1,1)).total_seconds(
     
 cube_3ord = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/3_ORD_LESS_762/All_time_steps/','m01s01i208'))[0]
 cube_2m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/All_time_steps/','m01s01i208'))[0]
+cube_2l = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_LESS/All_time_steps/','m01s01i208'))[0]
 cube = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s01i208'))[0]
 #cube_con = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/BASE_CONTACT_242/All_time_steps/','m01s01i208'))[0]
 cube_nh = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/NO_HALLET/All_time_steps/','m01s01i208'))[0]
@@ -74,7 +74,14 @@ cube_ni = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAI
 cube_csb = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/BASE/All_time_steps/','m01s01i208'))[0]
 cube_csbm = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEME/MEYERS/All_time_steps/','m01s01i208'))[0]
 cube_m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/MEYERS/All_time_steps/','m01s01i208'))[0]
+cube_gloprof= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLOMAP_PROFILE_DM/All_time_steps/','m01s01i208'))[0]
 
+cube_gl_csed=  iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HIGH_CSED/All_time_steps/','m01s01i208'))[0]
+cube_gl_low_csed=  iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_LOW_CSED/All_time_steps/','m01s01i208'))[0]
+
+
+
+cube_large_dom= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/LARGE_DOMAIN/All_time_steps/','m01s01i208'))[0]
 
 cube_oldm = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/OLD_MICRO/All_time_steps/','m01s01i208'))[0]
 cube_oldm = cube_oldm.regrid(cube_m, iris.analysis.Linear())
@@ -89,8 +96,10 @@ cube_oldm = cube_oldm.regrid(cube_m, iris.analysis.Linear())
 ##cube_con=cube_con[13,:,:]
 #cube_oldm=cube_oldm[13,:,:]
 
+cube_large_dom = cube_large_dom.regrid(cube_m, iris.analysis.Linear())
 
 
+#lmodel_lons,lmodel_lats=stc.unrotated_grid(cube_large_dom)
 
 #%%
 reload(stc)
@@ -110,21 +119,34 @@ X,Y=np.meshgrid(model_lons, model_lats)
 #data_old= sc.interpolate.griddata(coord_model, cube_oldm.data.flatten(), (X,Y), method='linear')
 #grid_z0 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='nearest')
 grid_z1 = sc.interpolate.griddata(coord, sat_LW, (X,Y), method='linear')
+#%%
+
+
 runs_dict=OrderedDict()
 runs_dict['Satellite']=grid_z1
 runs_dict['ALL_ICE_PROC']=cube[12].data
 runs_dict['BASE (CS)']=cube_csb[13].data
-runs_dict['MEYERS (CS)']=cube_csbm[13].data
-runs_dict['MEYERS']=cube_m[13].data
-runs_dict['3_ORD_LESS']=cube_3ord[13].data
+#runs_dict['MEYERS (CS)']=cube_csbm[13].data
+#runs_dict['MEYERS']=cube_m[13].data
+#runs_dict['3_ORD_LESS']=cube_3ord[13].data
+runs_dict['2_ORD_LESS']=cube_2l[13].data
 runs_dict['2_ORD_MORE']=cube_2m[13].data
 runs_dict['OLD_MICRO']=cube_oldm[13].data
+runs_dict['GLOPROF']=cube_gloprof[13].data
+runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data
+runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data
+
+#runs_dict['GLOMAP_PROFILE']=cube_gloprof[13].data
+#runs_dict['LARGE_DOM']=cube_large_dom[13].data
 #grid_z2 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='cubic')
 #grid_z2[grid_z2<0]=0
 #grid_z2[grid_z2==np.nan]=0
-levels=np.linspace(runs_dict['Satellite'].min(),runs_dict['Satellite'].max(),15)
+levels=np.linspace(150,800,15)#runs_dict['Satellite'].min()
+levels=np.linspace(150,runs_dict['Satellite'].max(),15)#runs_dict['Satellite'].min()
+levels_bin=np.linspace(150,800,150)#runs_dict['Satellite'].min()
+levels_bin=np.linspace(150,runs_dict['Satellite'].max(),30)#runs_dict['Satellite'].min()
 stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='TOA shortwave Wm-2')
-stc.plot_PDF(runs_dict,np.linspace(runs_dict['Satellite'].min()/1.5,runs_dict['Satellite'].max()*1.5,100),variable_name='TOA shortwave Wm-2')
+stc.plot_PDF(runs_dict,levels_bin,variable_name='TOA shortwave Wm-2')
 
 
 

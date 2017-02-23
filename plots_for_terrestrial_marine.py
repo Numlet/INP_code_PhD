@@ -25,6 +25,7 @@ from matplotlib import colors, ticker, cm
 saving_folder='/nfs/see-fs-01_users/eejvt/terrestial_marine/distribution_plots/'
 sl=20
 #%%
+matplotlib.rcParams.update({'font.size': 15})
 matplotlib.rcParams.update({'font.size': sl})
 #%%
 #'''EXAMPLE COLORMAPS'''
@@ -351,6 +352,7 @@ levelsfel=[10,100,1000,10000]
 
 
 fs=13
+fs_ct=11
 DJF=np.arange(-31,59,1)
 DJF_months=np.array([11,0,1])
 feb=np.arange(31,59,1)
@@ -360,7 +362,7 @@ Xmo,Ymo= np.meshgrid(lat.glat, ps)
 Xfel,Yfel=np.meshgrid(lat.glat,ps)
 cx.set_title('Dec-Jan-Feb')
 CS=cx.contour(Xfel,Yfel,INP_feldext_ambient_constantpress_daily[:,:,:,DJF].mean(axis=(-1,-2))*1e3,levelsfel,colors='k',hold='on',linewidths=[2,2,2])#linewidths=np.linspace(2, 6, 3)
-plt.clabel(CS, inline=1, fontsize=fs,fmt='%1.0f')
+plt.clabel(CS, inline=1, fontsize=fs_ct,fmt='%1.0f')
 plt.setp(CS.collections)
 CF=cx.contourf(Xmo,Ymo,INP_marine_ambient_constantpress_daily[:,:,:,DJF].mean(axis=(-1,-2))*1e3,levelsmo,cmap=plt.cm.YlOrRd,norm= colors.BoundaryNorm(levelsmo, 256))
 CB=plt.colorbar(CF,ticks=levelsmo,drawedges=1,label='$m^{-3}$')
@@ -383,7 +385,7 @@ Xmo,Ymo= np.meshgrid(lat.glat, ps)
 Xfel,Yfel=np.meshgrid(lat.glat,ps)
 dx.set_title('Jun-Jul-Aug')
 CS1=dx.contour(Xfel,Yfel,INP_feldext_ambient_constantpress_daily[:,:,:,JJA].mean(axis=(-1,-2))*1e3,levelsfel,colors='k',hold='on',linewidths=[2,2,2])#,linewidths=np.linspace(2, 6, 3)
-plt.clabel(CS1, inline=1, fontsize=fs,fmt='%1.0f')
+plt.clabel(CS1, inline=1, fontsize=fs_ct,fmt='%1.0f')
 plt.setp(CS1.collections)
 CF1=dx.contourf(Xmo,Ymo,INP_marine_ambient_constantpress_daily[:,:,:,JJA].mean(axis=(-1,-2))*1e3,levelsmo,cmap=plt.cm.YlOrRd,norm= colors.BoundaryNorm(levelsmo, 256))
 CB1=plt.colorbar(CF1,ticks=levelsmo,drawedges=1,label='$m^{-3}$')
@@ -402,9 +404,9 @@ plt.figure()
 dx=plt.subplot(1,1,1)
 Xmo,Ymo= np.meshgrid(lat.glat, ps)
 Xfel,Yfel=np.meshgrid(lat.glat,ps)
-dx.set_title('March-April-May')
+dx.set_title('Mar-Apr-May')
 CS1=dx.contour(Xfel,Yfel,INP_feldext_ambient_constantpress_daily[:,:,:,MAM].mean(axis=(-1,-2))*1e3,levelsfel,colors='k',hold='on',linewidths=[2,2,2])#,linewidths=np.linspace(2, 6, 3)
-plt.clabel(CS1, inline=1, fontsize=fs,fmt='%1.0f')
+plt.clabel(CS1, inline=1, fontsize=fs_ct,fmt='%1.0f')
 plt.setp(CS1.collections)
 CF1=dx.contourf(Xmo,Ymo,INP_marine_ambient_constantpress_daily[:,:,:,MAM].mean(axis=(-1,-2))*1e3,levelsmo,cmap=plt.cm.YlOrRd,norm= colors.BoundaryNorm(levelsmo, 256))
 CB1=plt.colorbar(CF1,ticks=levelsmo,drawedges=1,label='$m^{-3}$')
@@ -425,9 +427,9 @@ plt.figure()
 dx=plt.subplot(1,1,1)
 Xmo,Ymo= np.meshgrid(lat.glat, ps)
 Xfel,Yfel=np.meshgrid(lat.glat,ps)
-dx.set_title('September-October-November')
+dx.set_title('Sep-Oct-Nov')
 CS1=dx.contour(Xfel,Yfel,INP_feldext_ambient_constantpress_daily[:,:,:,SON].mean(axis=(-1,-2))*1e3,levelsfel,colors='k',hold='on',linewidths=[2,2,2])#,linewidths=np.linspace(2, 6, 3)
-plt.clabel(CS1, inline=1, fontsize=fs,fmt='%1.0f')
+plt.clabel(CS1, inline=1, fontsize=fs_ct,fmt='%1.0f')
 plt.setp(CS1.collections)
 CF1=dx.contourf(Xmo,Ymo,INP_marine_ambient_constantpress_daily[:,:,:,SON].mean(axis=(-1,-2))*1e3,levelsmo,cmap=plt.cm.YlOrRd,norm= colors.BoundaryNorm(levelsmo, 256))
 CB1=plt.colorbar(CF1,ticks=levelsmo,drawedges=1,label='$m^{-3}$')
