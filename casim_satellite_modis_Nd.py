@@ -114,6 +114,7 @@ cube_csb = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/CLOUD_SQUEM
 #cube_cdnc= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/L1/','loud droplet number concentration'))[0]
 #cube_cdnc=cube_cdnc.collapsed(['model_level_number'],iris.analysis.MAX)
 #cube_cdnc=cube_cdnc.collapsed(['model_level_number'],iris.analysis.MAX)
+cube_gpham= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HAMISH/L1/','Cloud_droplet_concentratio_at_maximum_cloud_water_content'))[0]
 
 cube_3ord = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/3_ORD_LESS_762/L1/','LWP'))[0]
 cube_2m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/L1/','LWP'))[0]
@@ -162,6 +163,7 @@ runs_dict['BASE (CS)']=cube_csb[13].data*1e-6
 runs_dict['GLOMAP_PROFILE']=cube_gloprof[13].data*1e-6
 runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data*1e-6
 runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data*1e-6
+runs_dict['GP_HAM']=cube_gpham[13].data*1e-6
 
          
 #runs_dict['BASE (CS)']=cube_csb[13].data
@@ -191,11 +193,11 @@ name='CDNC'
 minval,maxval = min_max(runs_dict)
 
 #levels=np.linspace(runs_dict['ALL_ICE_PROC'].min(),runs_dict['ALL_ICE_PROC'].max(),15)
-levels=np.linspace(20,200,15)
+levels=np.linspace(0,200,15)
 stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name=name)
 
 
-bins=np.linspace(20,200,150)
+bins=np.linspace(0,200,150)
 stc.plot_PDF(runs_dict,bins,variable_name=name)
 
 

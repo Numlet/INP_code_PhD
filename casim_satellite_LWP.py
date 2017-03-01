@@ -98,6 +98,7 @@ show_somedata(dataset)
 #%%
 
 cube_3ord = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/3_ORD_LESS_762/L1/','LWP'))[0]
+cube_2l = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_LESS/L1/','LWP'))[0]
 cube_2m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/L1/','LWP'))[0]
 cube = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/L1/','LWP'))[0]
 cube_con = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/BASE_CONTACT_242/L1/','LWP'))[0]
@@ -112,6 +113,7 @@ cube_gloprof= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD
 cube_gl_csed=  iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HIGH_CSED/L1/','LWP'))[0]
 cube_gl_low_csed=  iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_LOW_CSED/L1/','LWP'))[0]
 
+cube_gpham= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HAMISH/L1/','LWP'))[0]
 
 
 
@@ -157,13 +159,15 @@ runs_dict['Satellite (AMSR2)']=grid_z1
 #runs_dict['BASE (CS)']=cube_csb[13].data
 #runs_dict['MEYERS (CS)']=cube_csbm[13].data
 #runs_dict['MEYERS']=cube_m[13].data
-#runs_dict['3_ORD_LESS']=cube_3ord[13].data
-#runs_dict['2_ORD_MORE']=cube_2m[13].data
+runs_dict['2_ORD_LESS']=cube_2l[13].data
+runs_dict['2_ORD_MORE']=cube_2m[13].data
 
 runs_dict['GLOPROF']=cube_gloprof[13].data
 runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data
 runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data
+runs_dict['GP_HAM']=cube_gpham[13].data
 
+         
 levels=np.arange(0,0.45,0.05).tolist()
 same_bins=np.linspace(0,0.5,100)
 

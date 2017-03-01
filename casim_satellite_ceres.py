@@ -53,7 +53,9 @@ from scipy.io import netcdf
 cubes  =iris.load(path+'ceres/'+'CERES_SSF_Aqua-XTRK_Edition4A_Subset_2014120900-2014121023.nc')
 mb=netcdf.netcdf_file(path+'ceres/'+'CERES_SSF_Aqua-XTRK_Edition4A_Subset_2014120900-2014121023.nc','r') 
 mb=netcdf.netcdf_file(path+'ceres_all_SO/'+'CERES_SSF_Aqua-XTRK_Edition4A_Subset_2014120900-2014121023.nc','r') 
-
+path='/nfs/a201/eejvt/CASIM/SECOND_CLOUD/SATELLITE/'
+mb=netcdf.netcdf_file(path+'CERES/'+'CERES_SSF_NPP-XTRK_Edition1A_Subset_2015030100-2015030223.nc','r') 
+#%%
 SW=cubes[1]
 #model_lons=np.arange(-0.02*250,250*0.02,0.02)[0:]
 #model_lats=np.arange(-0.02*250-52,250*0.02-52,0.02)

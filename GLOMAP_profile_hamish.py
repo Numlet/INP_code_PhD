@@ -44,17 +44,17 @@ import scipy as sc
 
 ilat,ilon=50,3
 
-os.chdir(archive_directory+project)
+# os.chdir(archive_directory+project)
 
 rhocomp  = np.array([1769.,    1500.,    1500. ,   1600.,    2650.,    1500. ,2650.])#Kg/m3
 rhocomp =rhocomp*1e+9#ug/m3
 '''
-;           Sulphate    Carbon    1.4*BC   NaCl      SiO2,      SOC   Feldspar                               
+;           Sulphate    Carbon    1.4*BC   NaCl      SiO2,      SOC   Feldspar
     mm_aer = [0.098,    0.012,   0.0168 , 0.05844,    0.10,    0.0168 ,0.1] ;SOC was 0.15  ; molar masses in Kg/mol
     rhocomp  = [1769.,    1500.,    1500. ,   1600.,    2650.,    1500. ,2650.];masss density of components in Kg/m3
 '''
 #%%
-s1=jl.read_data('WITH_ICE_SCAV2')
+s1=jl.read_data(archive_directory+project+'WITH_ICE_SCAV2')
 
 def volumes_of_modes(s):
     modes_vol=(s.tot_mc_su_mm_mode[:,:,:,:,:]/rhocomp[0]
@@ -65,19 +65,40 @@ def volumes_of_modes(s):
     +s.tot_mc_feldspar_mm_mode[:,:,:,:,:]/rhocomp[6])
     return modes_vol
 
+modes_vol=volumes_of_modes(s1)
+dust_volfrac=((s1.tot_mc_feldspar_mm_mode[:,:,:,:,:]/rhocomp[6])+(s1.tot_mc_dust_mm_mode[:,:,:,:,:]/rhocomp[4]))/modes_vol
+
+
 ss_vol=+s1.tot_mc_ss_mm_mode[:,:,:,:,:]/rhocomp[3]
 modes_vol=volumes_of_modes(s1)#m3
 volfrac_ss=ss_vol/modes_vol
 ss_particles_ext=volfrac_ss*s1.st_nd
+
+
+
+
 
 ss_particles_05=ss_particles_ext[3,]+(ss_particles_ext[2,]-jl.lognormal_cummulative(ss_particles_ext[2,],250e-9,s1.rbardry[2,:,:,:,:],s1.sigma[2]))
 
 partial_acc=s1.st_nd[2,:,:,:,:]-jl.lognormal_cummulative(s1.st_nd[2,:,:,:,:],250e-9,s1.rbardry[2,:,:,:,:],s1.sigma[2])
 n05=s1.st_nd[3,:,:,:,:]+partial_acc-ss_particles_05#+s1.st_nd[6,:,:,:,:]#-ss_particles_05
 
-            
-            
-            
+dust_particles=s1.st_nd*dust_volfrac
+dust_mass=s1.tot_mc_feldspar_mm_mode+s1.tot_mc_dust_mm_mode
+
+partial_acc_dust=dust_particles[2,:,:,:,:]-jl.lognormal_cummulative(dust_particles[2,:,:,:,:],250e-9,s1.rbardry[2,:,:,:,:],s1.sigma[2])\
++dust_particles[-2,:,:,:,:]-jl.lognormal_cummulative(dust_particles[-2,:,:,:,:],250e-9,s1.rbardry[-2,:,:,:,:],s1.sigma[2])
+
+
+
+n05_dust=dust_particles[3,:,:,:,:]+dust_particles[-1,:,:,:,:]+partial_acc_dust
+
+
+
+
+
+
+
 #%%
 
 
@@ -104,10 +125,11 @@ total_mass=nd*md/avc*10**15#ug/m3
 tot_number=np.copy(nd)#cm-3
 
 
-          
-          
-          
-month=0
+
+
+
+month=6
+month_jesus=5
 GLOMAP_pressures=s1.pl_m[:,ilat,ilon,month]
 
 
@@ -150,7 +172,7 @@ acc_number_casim=f_acc_number(casim_pressures)
 f_aitken_number = sc.interpolate.interp1d(GLOMAP_pressures, tot_number[1,:,ilat,ilon,month])
 aitken_number_casim=f_aitken_number(casim_pressures)
 
-f_n05 = sc.interpolate.interp1d(GLOMAP_pressures, n05[:,ilat,ilon,month])
+f_n05 = sc.interpolate.interp1d(GLOMAP_pressures, n05_dust[:,ilat,ilon,month_jesus])
 n05_casim=f_n05(casim_pressures)
 
 
@@ -176,7 +198,7 @@ aerosols_tracers=[33001,33002,33003,33004,33005,33006,33005,33006,33007,33008,33
 #33009   insoluble accumulation mode mass
 #33010   insoluble accumulation mode number
 
-with open("GLOMAP_profile_high_aerosol_hamish.nml", "w") as text_file:
+with open("GLOMAP_profile_low_aerosol_hamish_for_demott_dust.nml", "w") as text_file:
     for i in range(len(aerosols_tracers)):
         text_file.write("%i\n" % aerosols_tracers[i])
         for ilev in range(len(casim_pressures)):
@@ -204,4 +226,3 @@ with open("GLOMAP_profile_high_aerosol_hamish.nml", "w") as text_file:
 
 
 #
-

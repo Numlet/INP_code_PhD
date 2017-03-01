@@ -66,7 +66,8 @@ sat_data=data.flatten()
 #%%
 
 #cube_3ord = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/3_ORD_LESS_762/L1/','CTT'))[0]
-#cube_2m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/L1/','CTT'))[0]
+cube_2m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/L1/','CTT'))[0]
+cube_2l = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_LESS/L1/','CTT'))[0]
 cube = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/L1/','CTT'))[0]
 #cube_con = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/BASE_CONTACT_242/L1/','CTT'))[0]
 #cube_oldm = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/OLD_MICRO/All_time_steps/','m01s09i223'))[0]
@@ -94,11 +95,10 @@ runs_dict['ALL_ICE_PROC']=cube[12].data
 runs_dict['MEYERS (CS)']=cube_csbm[13].data
 runs_dict['MEYERS']=cube_m[13].data
 #runs_dict['3_ORD_LESS']=cube_3ord[13].data
-#runs_dict['2_ORD_MORE']=cube_2m[13].data
+runs_dict['2_ORD_MORE']=cube_2m[13].data
+runs_dict['2_ORD_LESS']=cube_2l[13].data
 variable='CCT'
 levels=np.linspace(260,273,15)
 stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name=variable)
 bins=np.linspace(250,273,100)
 stc.plot_PDF(runs_dict,bins,variable_name=variable)
-
-
