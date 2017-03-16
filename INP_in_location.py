@@ -31,20 +31,23 @@ lon_point=-59.36
 title='Barbados'
 
 
-lon_point=1.32
-lat_point=53.5
-title='Leeds'
-
 lon_point=jl.mace_head_latlon_values[1]
 lat_point=jl.mace_head_latlon_values[0]
 title='Mace Head'
+
 
 lon_point=8
 lat_point=-52
 
 title='Southern Ocean grid'
 
+lon_point=1.32
+lat_point=53.5
+title='Leeds'
 
+
+INP_niemand_daily=np.load('/nfs/a201/eejvt/INP_niemand_ext_alltemps.npy')*1e6#m3
+#%%
 INP_marine_alltemps_monthly=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY/INP_marine_alltemps.npy')#m3
 INP_feldspar_alltemps_monthly=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e6#m3
 INP_feldspar_alltemps_daily=np.load('/nfs/a201/eejvt/MARINE_PARAMETERIZATION/DAILY/INP_feldext_alltemps_daily.npy')*1e6#m3
@@ -59,18 +62,22 @@ ed=-1#November
 sd=212#sAugust
 sd=181#sJuly
 ed=243#sSeptember
-sd=243#sSeptember
 ed=304#eNovember
-ed=304#e2ndNovember
 sd=0#sjanuary
 ed=364#edicember
+
+sd=243#sSeptember
+ed=304#e2ndNovember
+
 ilat=jl.find_nearest_vector_index(jl.lat,lat_point)
 ilon=jl.find_nearest_vector_index(jl.lon180,lon_point)
 column_feldspar=INP_feldspar_alltemps[:,:,ilat,ilon,:]
 column_marine=INP_marine_alltemps[:,:,ilat,ilon,:]
+
+column_dust=INP_niemand_daily[:,:,ilat,ilon,:]
 temps=np.arange(-37,1,1)
 temps=temps[::-1]
-top_lev=20
+top_lev=30
 
 #%%
 
@@ -193,25 +200,29 @@ plt.savefig(jl.home_dir+'different_params.png')
 #%%
 plt.figure()
 
-plt.title('Leeds [INP] 1st-September to 2nd-November daily variation')
+plt.title('Leeds [INP] (Niemand) 1st-September to 2nd-November daily variation')
 
 
-days=np.arange(len(column_feldspar[0,top_lev,sd:ed]))+1
+#days=np.arange(len(column_feldspar[0,top_lev,sd:ed]))+1
+days=np.arange(len(column_dust[0,top_lev,sd:ed]))+1
 data=np.zeros((len(days),4))
 data[:,0]=days
 
 T=15
-values=column_feldspar[T,top_lev,sd:ed]+column_marine[T,top_lev,sd:ed]
+#values=column_feldspar[T,top_lev,sd:ed]+column_marine[T,top_lev,sd:ed]
+values=column_dust[T,top_lev,sd:ed]
 plt.plot(days,values,label='T='+str(-T)+'$^{o}C$')
 data[:,1]=values
 
 T=20
-values=column_feldspar[T,top_lev,sd:ed]+column_marine[T,top_lev,sd:ed]
+#values=column_feldspar[T,top_lev,sd:ed]+column_marine[T,top_lev,sd:ed]
+values=column_dust[T,top_lev,sd:ed]
 plt.plot(days,values,label='T='+str(-T)+'$^{o}C$')
 data[:,2]=values
 
 T=25
-values=column_feldspar[T,top_lev,sd:ed]+column_marine[T,top_lev,sd:ed]
+#values=column_feldspar[T,top_lev,sd:ed]+column_marine[T,top_lev,sd:ed]
+values=column_dust[T,top_lev,sd:ed]
 plt.plot(days,values,label='T='+str(-T)+'$^{o}C$')
 data[:,3]=values
 
@@ -220,6 +231,7 @@ plt.ylabel('$[INP]/m^{3}$')
 plt.legend(loc='best')
 plt.yscale('log')
 
-np.savetxt('/nfs/see-fs-01_users/eejvt/For_danny/INP_variability_Leeds.csv',data,delimiter=',',header='Days since 1st of September,T=-15,T=-20,T=-25')
+#np.savetxt('/nfs/see-fs-01_users/eejvt/For_danny/INP_variability_Leeds_niemand.csv',data,delimiter=',',header='Days since 1st of September,T=-15,T=-20,T=-25')
+np.savetxt('/nfs/see-fs-01_users/eejvt/For_danny/INP_variability_Leeds_niemand.csv',data,delimiter=',',header='Days since 1st of September,T=-15,T=-20,T=-25')
 
 

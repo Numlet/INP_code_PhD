@@ -35,6 +35,14 @@ for rx in range(sh.nrows):
 
 worksheet = book.sheet_by_name('ns_clean')
 
+def BC_parametrization_tom(T):
+    #A=-20.27
+    #B=1.2
+    return 10**(-2.87-0.182*T)
+
+def feld_parametrization(T):
+    ns=np.exp((-1.03802178356815*T)+275.263379304105)
+    return ns
 #%%
 class run:
     def __init__(self):
@@ -44,28 +52,30 @@ class run:
 
 runs_dict={}
 jump_runs=['B4MB3.1', 'B3S1.2', 'B3S1.1']
-for icol in range(100):
-    head=worksheet.cell(0, icol).value
-    if head=='':continue
-    if head.split(" ", 1)[0] in jump_runs:continue
-    if head[0]=='B':
-        runs_dict[head]=run()
-        for i in range(10000):
-            try:
+for icol in range(200):
+    try:
+        head=worksheet.cell(0, icol).value
+        if head=='':continue
+        if head.split(" ", 1)[0] in jump_runs:continue
+        if head[0]=='B':
+            runs_dict[head]=run()
+            for i in range(10000):
+                try:
+                    temp_value=worksheet.cell(i, icol).value
+                except IndexError:
+                    break
                 temp_value=worksheet.cell(i, icol).value
-            except IndexError:
-                break
-            temp_value=worksheet.cell(i, icol).value
-            ff_value=worksheet.cell(i, icol+1).value
-            ns_value=worksheet.cell(i, icol+2).value
-            if isinstance(temp_value,float):
-                if ff_value!=1:
-                    runs_dict[head].ff.append(ff_value)
-                    runs_dict[head].temps.append(temp_value)
-                    runs_dict[head].ns.append(ns_value)
-            if temp_value=='':
-                break
-
+                ff_value=worksheet.cell(i, icol+1).value
+                ns_value=worksheet.cell(i, icol+2).value
+                if isinstance(temp_value,float):
+                    if ff_value!=1:
+                        runs_dict[head].ff.append(ff_value)
+                        runs_dict[head].temps.append(temp_value)
+                        runs_dict[head].ns.append(ns_value)
+                if temp_value=='':
+                    break
+    except:
+        print icol
 
 plt.figure()
 all_temps=[]
@@ -76,14 +86,32 @@ for run in runs_dict:
         for T in runs_dict[run].temps:all_temps.append(T)
         for T in runs_dict[run].temps:all_temps.append(T)
     elif '10-3' in run:
-        c='r'
+        if 'cane' in run:
+            c='orange'
+        else:
+            c='r'
     else:
         c='g'
-    plt.plot(runs_dict[run].temps,runs_dict[run].ns,'o',label=run.split(" ", 1)[0],c=c)
-    
+    plt.plot(runs_dict[run].temps,runs_dict[run].ns,'o',c=c)#,label=run.split(" ", 1)[0])
+
+plt.plot([],'o',c='r',label='Eugenol 10-3')
+plt.plot([],'o',c='b',label='Eugenol 10-2')
+plt.plot([],'o',c='orange',label='n-Decane 10-3')
+
+Ts=np.linspace(-30,-10,100)
+plt.plot(Ts,BC_parametrization_tom(Ts),label='BC ns upper limit')
+plt.yscale('log')
+
+
+plt.ylabel('ns (cm-2)')
 plt.yscale('log')
 plt.legend()
     
+Ts=np.linspace(-25,-5,100)
+plt.plot(Ts,feld_parametrization(Ts+273.15),label='Feldspar ns')
+plt.yscale('log')
+plt.legend()
+
 plt.figure()
 for run in runs_dict:
     if '10-2' in run:
@@ -94,9 +122,11 @@ for run in runs_dict:
         c='g'
     plt.plot(runs_dict[run].temps,runs_dict[run].ff,'o',label=run.split(" ", 1)[0],c=c)
     
+#%%
+#for i in range(20):
+#    plt.close()
 
-
-
+#%%
 
 
 

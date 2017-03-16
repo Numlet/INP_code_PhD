@@ -155,17 +155,17 @@ grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 
 runs_dict=OrderedDict()
 runs_dict['Satellite (AMSR2)']=grid_z1
-#runs_dict['ALL_ICE_PROC']=cube[12].data
+runs_dict['ALL_ICE_PROC']=cube[12].data
 #runs_dict['BASE (CS)']=cube_csb[13].data
 #runs_dict['MEYERS (CS)']=cube_csbm[13].data
-#runs_dict['MEYERS']=cube_m[13].data
+runs_dict['MEYERS']=cube_m[13].data
 runs_dict['2_ORD_LESS']=cube_2l[13].data
 runs_dict['2_ORD_MORE']=cube_2m[13].data
 
 runs_dict['GLOPROF']=cube_gloprof[13].data
-runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data
-runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data
-runs_dict['GP_HAM']=cube_gpham[13].data
+#runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data
+#runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data
+#runs_dict['GP_HAM']=cube_gpham[13].data
 
          
 levels=np.arange(0,0.45,0.05).tolist()
@@ -186,7 +186,9 @@ stc.plot_PDF(runs_dict,same_bins,
 
 
 
-
+#%%
+for i in range(10):
+    plt.close()
 
 
 

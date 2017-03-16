@@ -100,7 +100,7 @@ def plot_map(maps_dict,levels,lat,lon,variable_name='test'):
         name_run=maps_dict.keys()[i]
         print name_run
         plt.contourf(X,Y,maps_dict[name_run],levels, origin='lower',cmap=plt.cm.RdBu_r)
-        plt.title(name_run)
+        plt.title(name_run+' mean=%f'%maps_dict[name_run].mean())
         cb=plt.colorbar()
         print int(i2)%(i+1)
         if not (i+1)%int(i2):

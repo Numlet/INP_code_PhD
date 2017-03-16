@@ -13,21 +13,24 @@ import Jesuslib as jl
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io.idl import readsav
-archive_directory='/nfs/a107/eejvt/'
-project='JB_TRAINING'
 from matplotlib.colors import LogNorm
 from matplotlib import colors, ticker, cm
 import glob as glob
-os.chdir(archive_directory+project)
 
 #%%
+#archive_directory='/nfs/a107/eejvt/'
+#project='JB_TRAINING'
 
 rhocomp  = np.array([1769.,    1500.,    1500. ,   1600.,    2650.,    1500. ,2650.])#Kg/m3
 #rhocomp =rhocomp*1e+3#ug/cm3
 rhocomp =rhocomp*1e+9#ug/m3
 
-s=jl.read_data('WITH_ICE_SCAV2')
+archive_directory='/nfs/a201/eejvt/'
 
+project='MARINE_PARAMETERIZATION/'
+os.chdir(archive_directory+project)
+s=jl.read_data('DAILY')
+#%%
 def area_lognormal_per_particle(rbar,sigma):
     #print isinstance(sigma,float)
     if isinstance(sigma,np.float32):
@@ -126,7 +129,7 @@ def calculate_INP_niemand_ext(T):
                         #print 'INP',INP[i,ilev,ilat,ilon,imon]
     return INP
 '''
-INP_niemand_ext=np.zeros((38, 31, 64, 128, 12))
+INP_niemand_ext=np.zeros((38, 31, 64, 128, 365))
 for t in range(38):
     print t
     INP_niemand_ext[t,:,:,:,:]=calculate_INP_niemand_ext_mean_area_fitted(-t+273.15).sum(axis=0)
@@ -149,22 +152,22 @@ def calculate_INP_hoose_ext(T,dust_modes=[2,3]):
     return INP
 
 #%%
-ts=np.arange(248,267)
-def osullivan_parametrization(T):
-    #return ((2.974e-3)*T*T-2.16*T+366.3)#cm**2
-    return np.exp(2.974e-3*T**2-2.160*T+366)
-print osullivan_parametrization(ts)
-#2.974e-3*T**2-2.160*T+366
-
-def feld_parametrization(T):
-    ns=np.exp((-1.03802178356815*T)+275.263379304105)
-    return ns
-    
-
-def niemand_parametrization(T):
-    return np.exp(-0.517*(T-273.15)+8.834)*1e-4#cm**2
-
-plt.plot(ts,osullivan_parametrization(ts),'k-')
-plt.plot(ts,niemand_parametrization(ts))
-plt.plot(ts,feld_parametrization(ts))
-plt.yscale('log')
+#ts=np.arange(248,267)
+#def osullivan_parametrization(T):
+#    #return ((2.974e-3)*T*T-2.16*T+366.3)#cm**2
+#    return np.exp(2.974e-3*T**2-2.160*T+366)
+#print osullivan_parametrization(ts)
+##2.974e-3*T**2-2.160*T+366
+#
+#def feld_parametrization(T):
+#    ns=np.exp((-1.03802178356815*T)+275.263379304105)
+#    return ns
+#    
+#
+#def niemand_parametrization(T):
+#    return np.exp(-0.517*(T-273.15)+8.834)*1e-4#cm**2
+#
+#plt.plot(ts,osullivan_parametrization(ts),'k-')
+#plt.plot(ts,niemand_parametrization(ts))
+#plt.plot(ts,feld_parametrization(ts))
+#plt.yscale('log')

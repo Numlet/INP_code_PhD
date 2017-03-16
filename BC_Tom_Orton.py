@@ -146,9 +146,9 @@ INP_BC_ext_ambient_m3=INP_BC_ext_ambient*1e6
 
 
 #%%
+levels=
 
-
-jl.plot(INP_BC_ext_m3[30,15,:,:,:].mean(axis=-1)*1e-6,title='INP BC 600hpa T=-20C', cblabel='$m^{-3}$',cmap=plt.cm.OrRd)
+#jl.plot(INP_BC_ext_m3[30,15,:,:,:].mean(axis=-1)*1e-6,title='INP BC 600hpa T=-20C', cblabel='$m^{-3}$',cmap=plt.cm.OrRd)
 jl.plot(INP_BC_ext_m3[20,20,:,:,:].mean(axis=-1),title='INP BC 600hpa T=-20C', cblabel='$m^{-3}$',cmap=plt.cm.OrRd)
 jl.plot(INP_feld_ext_m3[20,20,:,:,:].mean(axis=-1),title='INP feld 600hpa T=-20C', cblabel='$m^{-3}$',cmap=plt.cm.OrRd)
 
@@ -286,5 +286,5 @@ np.savetxt('feldspar_cape_verde.csv',table,delimiter=',')
 for i in range(len(column_marine[0,:])):
 
 
-plt.plot(ps)
-plt.plot(jl.pressure)
+#plt.plot(ps)
+#plt.plot(jl.pressure)
