@@ -6,7 +6,7 @@ Created on Fri Jan 22 12:35:46 2016
 """
 import numpy as np
 import sys
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import os
 from glob import glob
@@ -175,13 +175,13 @@ MARINE INP DISTRIBUTIONS
 cmap=plt.cm.RdBu_r
 cmap=plt.cm.CMRmap_r
 cmap=plt.cm.hot_r
-cmap=plt.cm.YlGnBu
 cmap=plt.cm.coolwarm
 levels=[1*(4*(i%2)**2+1)*10**int((i-1)/2)for i in np.arange(-11,1,1)]
 levels=[1*(4*(i%2)**2+1)*10**(i/2)for i in np.arange(-12,2,1)]
 INP_feldext=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e3 #l
 INP_marine_alltemps=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY/INP_marine_alltemps.npy')*1e-3#l
 INP_marine_ambient_constantpress_daily=np.load('/nfs/a201/eejvt/MARINE_PARAMETERIZATION/DAILY/INP_marine_ambient_constant_press.npy')*1e-3 #l
+#%%
 
 jl.plot(INP_marine_alltemps[15,30,:,:,:].mean(axis=-1),clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
    #     title='b)[INP] marine organic T=-15C surface',
@@ -201,10 +201,37 @@ jl.plot(INP_feldext[15,30,:,:,:].mean(axis=-1)+INP_marine_alltemps[15,30,:,:,:].
         title='c)',
         file_name=saving_folder+'total_inp_surface_15',colorbar_format_sci=1,
         cmap=cmap,saving_format='png',f_size=sl,dpi=600)
+#%%
+meyers=np.load('/nfs/a201/eejvt/meyers.npy')*1e3
+demott=np.load('/nfs/a201/eejvt/demott.npy')*1e3
+INP_niemand=np.load('/nfs/a201/eejvt/INP_niemand_ext_alltemps.npy')*1e3
+#%%
+cmap=plt.cm.Reds
+levels=np.logspace(-4,2,11).tolist()
+jl.plot(INP_niemand[15,30,:,:,:].mean(axis=-1),clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
+    #    title='a)[INP] feldspar T=-15C surface',
+        title='Niemand 2012',
+        file_name=saving_folder+'Niemand_inp_surface_15',colorbar_format_sci=1,
+        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
 
 
+jl.plot(meyers[15,30,:,:,],clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
+     #   title='c)[INP] total T=-15C surface',
+        title='Meyers',
+        file_name=saving_folder+'total_inp_surface_15_meyers',colorbar_format_sci=1,
+        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
+jl.plot(demott[15,30,:,:,:].mean(axis=-1),clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
+     #   title='c)[INP] total T=-15C surface',
+        title='DeMott2010',
+        file_name=saving_folder+'total_inp_surface_15_demott',colorbar_format_sci=1,
+        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
+jl.plot(INP_feldext[15,30,:,:,:].mean(axis=-1)+INP_marine_alltemps[15,30,:,:,:].mean(axis=-1),clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
+     #   title='c)[INP] total T=-15C surface',
+        title='Marine + Feldspar',
+        file_name=saving_folder+'total_inp_surface_15_extended_levels',colorbar_format_sci=1,
+        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
 
-
+#%%
 jl.plot(INP_marine_ambient_constantpress_daily[12,:,:,:].mean(axis=-1),clevs=levels,cblabel='$[INP]_{ambient}/L^{-1}$',
         title='INP_ambient marine pressure=600hpa',
         file_name=saving_folder+'marine_600_ambient',colorbar_format_sci=1,
@@ -512,7 +539,58 @@ INP_total_year_mean=INP_total.mean(axis=-1)*1e-6#cm-3
 simulated_values=INP_total_year_mean
 simulated_values_max=INP_total.max(axis=-1)*1e-6
 simulated_values_min=INP_total.min(axis=-1)*1e-6
+#%%
+plt.figure()
+INP_obs_mason=jl.read_INP_data("/nfs/a107/eejvt/INP_DATA/MARINE_INFLUENCED.dat",header=1)
+INP_obs=jl.read_INP_data("/nfs/a107/eejvt/INP_DATA/TERRESTIAL_INFLUENCED.dat",header=1)
+marker='o'
+marker_mason='^'
+marker_size=30
+marker_size_mason=50
+INP_obs_total=np.concatenate((INP_obs,INP_obs_mason))
+temps=INP_obs[:,1]
+concentrations=INP_obs[:,2]
+lats=INP_obs[:,3]
+plot=plt.scatter(temps,concentrations,c=lats,cmap=plt.cm.RdBu,marker=marker,s=marker_size)
+temps=INP_obs_mason[:,1]
+concentrations=INP_obs_mason[:,2]
+lats=INP_obs_mason[:,3]
+plot=plt.scatter(temps,concentrations,c=lats,cmap=plt.cm.RdBu,marker='^',s=marker_size_mason)
+plt.ylim(INP_obs_total[:,2].min()*.5,INP_obs_total[:,2].max()*1.5)
+plt.colorbar(label='Latitude')
+plt.xlabel('T $^o$C')
+plt.ylabel('INP concentration cm$^{-3}$')
+plt.yscale('log')
+def meyers_param(T,units_cm=0):
+    a=-0.639
+    b=0.1296
+    return np.exp(a+b*(100*(jl.saturation_ratio_C(T)-1)))#L-1
+    
+def fletcher_param(T,units_cm=0):
 
+    return 0.01*np.exp(-0.6*T)#m-3
+def cooper_param(T,units_cm=0):
+
+    return 5.0*np.exp(-0.304*T)#m-3
+    
+
+
+temps=np.arange(-37,1,1)
+
+plt.scatter([],[],c='k',marker='^',label='Marine points')
+plt.scatter([],[],c='k',marker='o',label='Terrestrial points')
+plt.plot(temps,meyers_param(temps)*1e-3,'r',label='Meyers1992')
+plt.plot(temps,fletcher_param(temps)*1e-6,'b',label='Flecher1962')
+plt.plot(temps,cooper_param(temps)*1e-6,'g',label='Cooper1986')
+plt.legend(loc='lower left')
+#plt.legend(loc='upper right')
+plt.title('Dataset used in Vergara-Temprado 2017')
+plt.savefig(jl.home_dir+'INP_observations.png')
+#%%
+for i in range(1000):
+    plt.close()
+
+#%%
 
 simulated_values_feld=INP_feldext.min(axis=-1)*1e-6
 simulated_values_marine=INP_marine_alltemps.min(axis=-1)*1e-6

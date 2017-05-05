@@ -13,13 +13,13 @@ dir_scripts='/nfs/see-fs-01_users/eejvt/UKCA_postproc'#Change this to the downlo
 sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import numpy as np
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import matplotlib.pyplot as plt
 from scipy.io import netcdf
 sys.path.append('/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/code')
 from scipy.io import netcdf
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE/Satellite_Comparison')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 import datetime
 import scipy as sc
@@ -57,8 +57,8 @@ LW=np.copy(mb.variables['CERES_SW_TOA_flux___upwards'].data)
 lon=mb.variables['lon'].data
 lat=mb.variables['lat'].data
 
-ti=16#h
-te=17#h
+ti=15#h
+te=18#h
 
 tdi=(datetime.datetime(2015,01,10,ti)-datetime.datetime(1970,1,1)).total_seconds()
 tde=(datetime.datetime(2015,01,10,te)-datetime.datetime(1970,1,1)).total_seconds()
@@ -112,37 +112,73 @@ grid_z1 = sc.interpolate.griddata(coord, sat_LW, (X,Y), method='linear')
 
 it=16
 runs_dict=OrderedDict()
-size_grid=(50,50)
-X_con=jl.congrid(X,size_grid)
-Y_con=jl.congrid(Y,size_grid)
+congrid=False
+if congrid:
+    size_grid=(50,50)
 
+    X=jl.congrid(X,size_grid)
+    Y=jl.congrid(Y,size_grid)
+    
+    
+    runs_dict['Satellite']=jl.congrid(grid_z1,size_grid)
+    runs_dict['DM10']=jl.congrid(cube_DM10[it].data,size_grid)
+    runs_dict['GLO_HIGH']=jl.congrid(cube_GLO_HIGH[it].data,size_grid)
+    #runs_dict['MEYERS (CS)']=cube_csbm[13].data
+    #runs_dict['MEYERS']=cube_m[13].data
+    #runs_dict['3_ORD_LESS']=cube_3ord[13].data
+    #runs_dict['2_ORD_LESS']=cube_2l[13].data
+    #runs_dict['2_ORD_MORE']=cube_2m[13].data
+    #runs_dict['OLD_MICRO']=cube_oldm[13].data
+    #runs_dict['GLOPROF']=cube_gloprof[13].data
+    runs_dict['GLO_MEAN']=jl.congrid(cube_GLO_MEAN[it].data,size_grid)
+    runs_dict['GLO_MIN']=jl.congrid(cube_GLO_MIN[it].data,size_grid)
+    runs_dict['GP_HAM_DMDUST']=jl.congrid(cube_GP_HAM_DMDUST[it].data,size_grid)
+    runs_dict['MEYERS']=jl.congrid(cube_MEYERS[it].data,size_grid)
+    
+    #runs_dict['GLOMAP_PROFILE']=cube_gloprof[13].data
+    #runs_dict['LARGE_DOM']=cube_large_dom[13].data
+    #grid_z2 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='cubic')
+    #grid_z2[grid_z2<0]=0
+    #grid_z2[grid_z2==np.nan]=0
+    levels=np.linspace(0,runs_dict['Satellite'].max(),15)#runs_dict['Satellite'].min()
+    levels=np.linspace(130,800,15)#runs_dict['Satellite'].min()
+    levels_bin=np.linspace(0,runs_dict['Satellite'].max(),30)#runs_dict['Satellite'].min()
+    levels_bin=np.linspace(130,800,50)#runs_dict['Satellite'].min()
+    stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='(THIRD) TOA shortwave reduced Wm-2')
+    stc.plot_PDF(runs_dict,levels_bin,variable_name='(THIRD) TOA shortwave reduced  Wm-2')
+else:
+    size_grid=(50,50)
 
-runs_dict['Satellite']=jl.congrid(grid_z1,size_grid)
-runs_dict['DM10']=jl.congrid(cube_DM10[it].data,size_grid)
-runs_dict['GLO_HIGH']=jl.congrid(cube_GLO_HIGH[it].data,size_grid)
-#runs_dict['MEYERS (CS)']=cube_csbm[13].data
-#runs_dict['MEYERS']=cube_m[13].data
-#runs_dict['3_ORD_LESS']=cube_3ord[13].data
-#runs_dict['2_ORD_LESS']=cube_2l[13].data
-#runs_dict['2_ORD_MORE']=cube_2m[13].data
-#runs_dict['OLD_MICRO']=cube_oldm[13].data
-#runs_dict['GLOPROF']=cube_gloprof[13].data
-runs_dict['GLO_MEAN']=jl.congrid(cube_GLO_MEAN[it].data,size_grid)
-runs_dict['GLO_MIN']=jl.congrid(cube_GLO_MIN[it].data,size_grid)
-runs_dict['GP_HAM_DMDUST']=jl.congrid(cube_GP_HAM_DMDUST[it].data,size_grid)
-runs_dict['MEYERS']=jl.congrid(cube_MEYERS[it].data,size_grid)
-
-#runs_dict['GLOMAP_PROFILE']=cube_gloprof[13].data
-#runs_dict['LARGE_DOM']=cube_large_dom[13].data
-#grid_z2 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='cubic')
-#grid_z2[grid_z2<0]=0
-#grid_z2[grid_z2==np.nan]=0
-levels=np.linspace(0,runs_dict['Satellite'].max(),15)#runs_dict['Satellite'].min()
-levels=np.linspace(130,800,15)#runs_dict['Satellite'].min()
-levels_bin=np.linspace(0,runs_dict['Satellite'].max(),30)#runs_dict['Satellite'].min()
-levels_bin=np.linspace(130,800,50)#runs_dict['Satellite'].min()
-stc.plot_map(runs_dict,levels,lat=X_con,lon=Y_con,variable_name='(SC) TOA shortwave reduced (CCN) Wm-2')
-stc.plot_PDF(runs_dict,levels_bin,variable_name='(SC) TOA shortwave reduced (CCN) Wm-2')
+#    X=jl.congrid(X,size_grid)
+#    Y=jl.congrid(Y,size_grid)
+    
+    
+    runs_dict['Satellite']=grid_z1
+    runs_dict['DM10']=cube_DM10[it].data
+    runs_dict['GLO_HIGH']=cube_GLO_HIGH[it].data
+    #runs_dict['MEYERS (CS)']=cube_csbm[13].data
+    #runs_dict['MEYERS']=cube_m[13].data
+    #runs_dict['3_ORD_LESS']=cube_3ord[13].data
+    #runs_dict['2_ORD_LESS']=cube_2l[13].data
+    #runs_dict['2_ORD_MORE']=cube_2m[13].data
+    #runs_dict['OLD_MICRO']=cube_oldm[13].data
+    #runs_dict['GLOPROF']=cube_gloprof[13].data
+    runs_dict['GLO_MEAN']=cube_GLO_MEAN[it].data
+    runs_dict['GLO_MIN']=cube_GLO_MIN[it].data
+    runs_dict['GP_HAM_DMDUST']=cube_GP_HAM_DMDUST[it].data
+    runs_dict['MEYERS']=cube_MEYERS[it].data
+    
+    #runs_dict['GLOMAP_PROFILE']=cube_gloprof[13].data
+    #runs_dict['LARGE_DOM']=cube_large_dom[13].data
+    #grid_z2 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='cubic')
+    #grid_z2[grid_z2<0]=0
+    #grid_z2[grid_z2==np.nan]=0
+    levels=np.linspace(0,runs_dict['Satellite'].max(),15)#runs_dict['Satellite'].min()
+    levels=np.linspace(100,700,15)#runs_dict['Satellite'].min()
+    levels_bin=np.linspace(0,runs_dict['Satellite'].max(),30)#runs_dict['Satellite'].min()
+    levels_bin=np.linspace(100,700,50)#runs_dict['Satellite'].min()
+    stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='(THIRD) TOA shortwave Wm-2')
+    stc.plot_PDF(runs_dict,levels_bin,variable_name='(THIRD) TOA shortwave Wm-2')
 
 
 

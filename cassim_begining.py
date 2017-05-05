@@ -7,7 +7,7 @@ Created on Thu Jul  7 10:56:41 2016
 import iris.quickplot as qplt
 import numpy as np
 import sys
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import os
 from glob import glob

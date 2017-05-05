@@ -16,7 +16,7 @@ sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import iris.quickplot as qp
 import numpy as np
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animationlt
@@ -28,14 +28,14 @@ import datetime
 import scipy as sc
 from scipy.io import netcdf
 import time
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE/Satellite_Comparison')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 
 from collections import OrderedDict
 
 font = {'family' : 'normal',
         'weight' : 'normal',
-        'size'   : 18}
+        'size'   : 14}
 
 matplotlib.rc('font', **font)
 
@@ -102,12 +102,19 @@ sim_path='/nfs/a201/eejvt/CASIM/SECOND_CLOUD/'
 sub_folder='L1/'
 code='LWP'
 
-cube_DM10 = iris.load(ukl.Obtain_name(sim_path+'/DM10/'+sub_folder,code))[0]
-cube_GLO_HIGH = iris.load(ukl.Obtain_name(sim_path+'/GLO_HIGH/'+sub_folder,code))[0]
-cube_GLO_MEAN = iris.load(ukl.Obtain_name(sim_path+'/GLO_MEAN/'+sub_folder,code))[0]
-cube_GLO_MIN = iris.load(ukl.Obtain_name(sim_path+'/GLO_MIN/'+sub_folder,code))[0]
-cube_GP_HAM_DMDUST = iris.load(ukl.Obtain_name(sim_path+'/GP_HAM_DMDUST/'+sub_folder,code))[0]
-cube_MEYERS = iris.load(ukl.Obtain_name(sim_path+'/MEYERS/'+sub_folder,code))[0]
+cube_DM10 = stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/DM10/'+sub_folder,code))[0])
+cube_GLO_HIGH = stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/GLO_HIGH/'+sub_folder,code))[0])
+cube_GLO_MEAN = stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/GLO_MEAN/'+sub_folder,code))[0])
+cube_GLO_MIN = stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/GLO_MIN/'+sub_folder,code))[0])
+cube_GP_HAM_DMDUST = stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/GP_HAM_DMDUST/'+sub_folder,code))[0])
+cube_MEYERS = stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/MEYERS/'+sub_folder,code))[0])
+
+
+
+
+cube_global= iris.load(ukl.Obtain_name(sim_path+'/GLOBAL/'+sub_folder,code))[0]
+
+cube_global = cube_global.regrid(cube_DM10, iris.analysis.Linear())
 #%%
 
 
@@ -157,6 +164,8 @@ plt.imshow(grid_z1)
 it=16
 runs_dict=OrderedDict()
 runs_dict['Satellite']=grid_z1
+runs_dict['GLOBAL']=cube_global[it].data
+runs_dict['MEYERS']=cube_MEYERS[it].data
 runs_dict['DM10']=cube_DM10[it].data
 runs_dict['GLO_HIGH']=cube_GLO_HIGH[it].data
 #runs_dict['MEYERS (CS)']=cube_csbm[13].data
@@ -169,10 +178,9 @@ runs_dict['GLO_HIGH']=cube_GLO_HIGH[it].data
 runs_dict['GLO_MEAN']=cube_GLO_MEAN[it].data
 runs_dict['GLO_MIN']=cube_GLO_MIN[it].data
 runs_dict['GP_HAM_DMDUST']=cube_GP_HAM_DMDUST[it].data
-runs_dict['MEYERS']=cube_MEYERS[it].data
          
-levels=np.arange(0.05,0.5,0.05).tolist()
-same_bins=np.linspace(0.05,0.5,100)
+levels=np.arange(0.00,0.6,0.05).tolist()
+same_bins=np.linspace(0.00,0.6,100)
 
 #levels=np.linspace(runs_dict['Satellite (AMSR2)'].min(),runs_dict['Satellite (AMSR2)'].max(),15)
 stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='LWP mm')
@@ -188,74 +196,74 @@ stc.plot_PDF(runs_dict,same_bins,
 
 
 #%%
-from mpl_toolkits.basemap import Basemap
-from matplotlib.patches import Polygon
-times=dataset.variables['time'][0,]
-times[times==missing]=0
-LWP=dataset.variables['cloud'][0,]
-LWP[LWP==missing]=0
-lon=dataset.variables['longitude']
-lat=dataset.variables['latitude']
-
-
-def draw_screen_poly( lats, lons, m):
-    x, y = m( lons, lats )
-    xy = zip(x,y)
-    poly = Polygon( xy, facecolor='green', alpha=0.7 )
-    plt.gca().add_patch(poly)
-
-
+#from mpl_toolkits.basemap import Basemap
+#from matplotlib.patches import Polygon
+#times=dataset.variables['time'][0,]
+#times[times==missing]=0
+#LWP=dataset.variables['cloud'][0,]
+#LWP[LWP==missing]=0
+#lon=dataset.variables['longitude']
+#lat=dataset.variables['latitude']
+#
+#
+#def draw_screen_poly( lats, lons, m):
+#    x, y = m( lons, lats )
+#    xy = zip(x,y)
+#    poly = Polygon( xy, facecolor='green', alpha=0.7 )
+#    plt.gca().add_patch(poly)
+#
+#
 
 
 #%%
 #PLOTING EXAMPLE
 
-lats = [ -47.5, -57.5,-57.5,-47.5]
-lons = [ -5, -5, 5, 5 ]
-
-
-fig=plt.figure()#figsize=(20, 12))
-m = fig.add_subplot(1,1,1)
-#m = Basemap(projection='lcc',
-#            resolution='c',urcrnrlat=-57.5,llcrnrlat=-47.5,llcrnrlon=-5,ucrnrlon=15.)
-#m = Basemap(projection='cyl',lon_0=0)#,urcrnrlat=-57.5,llcrnrlat=-47.5,llcrnrlon=-5,ucrnrlon=15.)
-#m = Basemap(projection='cea',llcrnrlat=-58.5,urcrnrlat=-47.5,\
-#            llcrnrlon=-5,urcrnrlon=15,resolution='c')
-m= Basemap(projection='ortho',lat_0=-25,lon_0=-50,resolution='l')
-draw_screen_poly( lats, lons, m )
-#m = Basemap(projection='stere',lon_0=0,lat_0=90.,lat_ts=lat_0,\
-#            llcrnrlat=latcorners[0],urcrnrlat=latcorners[2],\
-#            llcrnrlon=loncorners[0],urcrnrlon=loncorners[2],\
-#            rsphere=6371200.,resolution='l',area_thresh=10000)
-m.drawcoastlines()
-m.drawparallels(np.arange(-90.,120.,10.))
-m.drawmeridians(np.arange(0.,360.,10))
-
-plt.title('Liquid water path retrieved by AMSR2')
-#LWP[times<12]=0
-#LWP[times>14]=0
-
-X,Y=np.meshgrid(lon,lat)
-#X,Y=np.meshgrid(X[times==13],Y[times==13])
-levels=np.arange(0,0.4,0.05).tolist()
-cs=m.contourf(X,Y,LWP,levels,latlon=True,cmap=plt.cm.Blues)#,norm= colors.BoundaryNorm(clevs, 256))
-
-cb = m.colorbar(cs,format='%.2f')#,ticks=clevs)
-cb.set_label('$kg/m^{-3}$')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#lats = [ -47.5, -57.5,-57.5,-47.5]
+#lons = [ -5, -5, 5, 5 ]
+#
+#
+#fig=plt.figure()#figsize=(20, 12))
+#m = fig.add_subplot(1,1,1)
+##m = Basemap(projection='lcc',
+##            resolution='c',urcrnrlat=-57.5,llcrnrlat=-47.5,llcrnrlon=-5,ucrnrlon=15.)
+##m = Basemap(projection='cyl',lon_0=0)#,urcrnrlat=-57.5,llcrnrlat=-47.5,llcrnrlon=-5,ucrnrlon=15.)
+##m = Basemap(projection='cea',llcrnrlat=-58.5,urcrnrlat=-47.5,\
+##            llcrnrlon=-5,urcrnrlon=15,resolution='c')
+#m= Basemap(projection='ortho',lat_0=-25,lon_0=-50,resolution='l')
+#draw_screen_poly( lats, lons, m )
+##m = Basemap(projection='stere',lon_0=0,lat_0=90.,lat_ts=lat_0,\
+##            llcrnrlat=latcorners[0],urcrnrlat=latcorners[2],\
+##            llcrnrlon=loncorners[0],urcrnrlon=loncorners[2],\
+##            rsphere=6371200.,resolution='l',area_thresh=10000)
+#m.drawcoastlines()
+#m.drawparallels(np.arange(-90.,120.,10.))
+#m.drawmeridians(np.arange(0.,360.,10))
+#
+#plt.title('Liquid water path retrieved by AMSR2')
+##LWP[times<12]=0
+##LWP[times>14]=0
+#
+#X,Y=np.meshgrid(lon,lat)
+##X,Y=np.meshgrid(X[times==13],Y[times==13])
+#levels=np.arange(0,0.4,0.05).tolist()
+#cs=m.contourf(X,Y,LWP,levels,latlon=True,cmap=plt.cm.Blues)#,norm= colors.BoundaryNorm(clevs, 256))
+#
+#cb = m.colorbar(cs,format='%.2f')#,ticks=clevs)
+#cb.set_label('$kg/m^{-3}$')
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 
 
 

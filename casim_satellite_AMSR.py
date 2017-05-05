@@ -16,7 +16,7 @@ sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import iris.quickplot as qp
 import numpy as np
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animationlt
@@ -100,10 +100,10 @@ from matplotlib import colors, ticker, cm
 
 from matplotlib.patches import Polygon
 
-def draw_screen_poly( lats, lons, m):
+def draw_screen_poly( lats, lons, m,c='green'):
     x, y = m( lons, lats )
     xy = zip(x,y)
-    poly = Polygon( xy, facecolor='green', alpha=0.4 )
+    poly = Polygon( xy, facecolor=c, alpha=0.4 )
     plt.gca().add_patch(poly)
 
 lats = [ -37, -57, -57, -37 ]
@@ -300,6 +300,23 @@ plt.savefig('/nfs/see-fs-01_users/eejvt/CASIM/AMSR2_PDF.png')
 #sat_lon=lon[times_range]
 #sat_lat=lat[times_range]
 
+cube_1st = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/3_ORD_LESS_762/L1/','LWP'))[0]
+
+sim_path='/nfs/a201/eejvt/CASIM/SECOND_CLOUD/'
+sub_folder='L1/'
+code='CTT'
+
+cube_2nd = iris.load(ukl.Obtain_name(sim_path+'/DM10/'+sub_folder,code))[0]
+
+
+sim_path='/nfs/a201/eejvt/CASIM/THIRD_CLOUD/'
+sub_folder='L1/'
+code='CTT'
+
+cube_3rd  = iris.load(ukl.Obtain_name(sim_path+'/DM10/'+sub_folder,code))[0]
+
+
+
 fig=plt.figure()#figsize=(20, 12))
 m = fig.add_subplot(1,1,1)
 #m = Basemap(projection='lcc',
@@ -308,7 +325,50 @@ m = fig.add_subplot(1,1,1)
 #m = Basemap(projection='cea',llcrnrlat=-58.5,urcrnrlat=-47.5,\
 #            llcrnrlon=-5,urcrnrlon=15,resolution='c')
 m= Basemap(projection='ortho',lat_0=-35,lon_0=0,resolution='l')
+
+
+model_lons,model_lats=unrotated_grid(cube_1st)
+#draw_screen_poly( lats, lons, m )
+lats=[0,0,0,0]
+lons=[0,0,0,0]
+lats[0]=model_lats.max()
+lats[1]=model_lats.min()
+lats[2]=model_lats.min()
+lats[3]=model_lats.max()
+
+lons[0]=model_lons.min()
+lons[1]=model_lons.min()
+lons[2]=model_lons.max()
+lons[3]=model_lons.max()
 draw_screen_poly( lats, lons, m )
+model_lons,model_lats=unrotated_grid(cube_2nd)
+lats=[0,0,0,0]
+lons=[0,0,0,0]
+lats[0]=model_lats.max()
+lats[1]=model_lats.min()
+lats[2]=model_lats.min()
+lats[3]=model_lats.max()
+
+lons[0]=model_lons.min()
+lons[1]=model_lons.min()
+lons[2]=model_lons.max()
+lons[3]=model_lons.max()
+
+draw_screen_poly( lats, lons, m ,c='red')
+model_lons,model_lats=unrotated_grid(cube_3rd)
+lats=[0,0,0,0]
+lons=[0,0,0,0]
+lats[0]=model_lats.max()
+lats[1]=model_lats.min()
+lats[2]=model_lats.min()
+lats[3]=model_lats.max()
+
+lons[0]=model_lons.min()
+lons[1]=model_lons.min()
+lons[2]=model_lons.max()
+lons[3]=model_lons.max()
+
+draw_screen_poly( lats, lons, m, c='blue')
 #m = Basemap(projection='stere',lon_0=0,lat_0=90.,lat_ts=lat_0,\
 #            llcrnrlat=latcorners[0],urcrnrlat=latcorners[2],\
 #            llcrnrlon=loncorners[0],urcrnrlon=loncorners[2],\

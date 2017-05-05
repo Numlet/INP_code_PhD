@@ -7,7 +7,7 @@ Created on Thu Feb 18 09:43:37 2016
 
 import os
 import sys
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import numpy as np
 import matplotlib.pyplot as plt
@@ -146,7 +146,7 @@ INP_BC_ext_ambient_m3=INP_BC_ext_ambient*1e6
 
 
 #%%
-levels=
+#levels=
 
 #jl.plot(INP_BC_ext_m3[30,15,:,:,:].mean(axis=-1)*1e-6,title='INP BC 600hpa T=-20C', cblabel='$m^{-3}$',cmap=plt.cm.OrRd)
 jl.plot(INP_BC_ext_m3[20,20,:,:,:].mean(axis=-1),title='INP BC 600hpa T=-20C', cblabel='$m^{-3}$',cmap=plt.cm.OrRd)

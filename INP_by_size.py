@@ -9,7 +9,7 @@ Created on Thu Nov 17 09:55:04 2016
 
 import numpy as np
 import sys
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import os
 from scipy.io.idl import readsav

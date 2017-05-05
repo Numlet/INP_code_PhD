@@ -6,7 +6,7 @@ Created on Wed May 11 10:15:23 2016
 """
 
 import sys
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import numpy as np
 import Jesuslib as jl
 import os

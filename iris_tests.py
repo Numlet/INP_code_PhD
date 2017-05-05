@@ -7,7 +7,7 @@ Created on Fri Jul 15 09:55:20 2016
 
 import numpy as np
 import sys
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 sys.path.append('/nfs/see-fs-01_users/eejvt/UKCA_postproc')
 import Jesuslib as jl
 import os

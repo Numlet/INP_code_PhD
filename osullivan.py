@@ -8,7 +8,7 @@ Created on Mon Nov 30 12:15:47 2015
 
 import os
 import sys
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import numpy as np
 import matplotlib.pyplot as plt

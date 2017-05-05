@@ -7,7 +7,7 @@ Created on Mon Feb  2 17:31:55 2015
 import numpy.ma as ma
 import sys
 import random
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 #import cartopy.crs as ccrs
 #import cartopy.feature as cfeat
 from scipy.io.idl import readsav

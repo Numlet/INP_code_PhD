@@ -17,7 +17,7 @@ sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import iris.quickplot as qp
 import numpy as np
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animationlt
@@ -71,7 +71,7 @@ def unrotated_grid(cube):
 
 
 
-def plot_map(maps_dict,levels,lat,lon,variable_name='test'):
+def plot_map(maps_dict,levels,lat,lon,variable_name='test',means=0):
     plt.figure(figsize=(18,15))
     if len(lat.shape)==1:
         X,Y=np.meshgrid(lat,lon)
@@ -100,7 +100,10 @@ def plot_map(maps_dict,levels,lat,lon,variable_name='test'):
         name_run=maps_dict.keys()[i]
         print name_run
         plt.contourf(X,Y,maps_dict[name_run],levels, origin='lower',cmap=plt.cm.RdBu_r)
-        plt.title(name_run+' mean=%f'%maps_dict[name_run].mean())
+        if means:
+            plt.title(name_run+' mean=%f'%np.nanmean(maps_dict[name_run]))
+        else:
+            plt.title(name_run)
         cb=plt.colorbar()
         print int(i2)%(i+1)
         if not (i+1)%int(i2):
@@ -108,6 +111,14 @@ def plot_map(maps_dict,levels,lat,lon,variable_name='test'):
 
     plt.savefig('/nfs/see-fs-01_users/eejvt/CASIM/'+variable_name+'.png')
     plt.show()
+
+
+
+def clean_cube(cube,value=50):
+    new_cube=cube[:,value:,value:]
+    new_cube=new_cube[:,:-value,:-value]
+    return new_cube
+
 #%%
 #posibilities=np.linspace(1,9,9)
 #print posibilities

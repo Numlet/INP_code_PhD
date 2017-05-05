@@ -13,13 +13,13 @@ dir_scripts='/nfs/see-fs-01_users/eejvt/UKCA_postproc'#Change this to the downlo
 sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import numpy as np
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import matplotlib.pyplot as plt
 from scipy.io import netcdf
 sys.path.append('/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/code')
 from scipy.io import netcdf
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE/Satellite_Comparison')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 import datetime
 import scipy as sc

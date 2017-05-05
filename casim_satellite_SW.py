@@ -13,13 +13,13 @@ dir_scripts='/nfs/see-fs-01_users/eejvt/UKCA_postproc'#Change this to the downlo
 sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import numpy as np
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import matplotlib.pyplot as plt
 from scipy.io import netcdf
 sys.path.append('/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/code')
 from scipy.io import netcdf
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE/Satellite_Comparison')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 import datetime
 import scipy as sc
@@ -57,7 +57,7 @@ lon=mb.variables['lon'].data
 lat=mb.variables['lat'].data
 
 ti=13#h
-te=23#h
+te=15#h
 
 tdi=(datetime.datetime(2014,12,9,ti)-datetime.datetime(1970,1,1)).total_seconds()
 tde=(datetime.datetime(2014,12,9,te)-datetime.datetime(1970,1,1)).total_seconds()
@@ -65,6 +65,15 @@ tde=(datetime.datetime(2014,12,9,te)-datetime.datetime(1970,1,1)).total_seconds(
 t13=(datetime.datetime(2014,12,9,14)-datetime.datetime(1970,1,1)).total_seconds()/3600.
     
 cube_3ord = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/3_ORD_LESS_762/All_time_steps/','m01s01i208'))[0]
+cube_single = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SINGLE_MOMENT/All_time_steps/','m01s01i208'))[0]
+
+cube_SM_100_COOPER = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_100_COOPER/All_time_steps/','m01s01i208'))[0]
+cube_SM_T40 = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_T40/All_time_steps/','m01s01i208'))[0]
+cube_SM_LCOND_FALSE = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_LCOND_FALSE/All_time_steps/','m01s01i208'))[0]
+cube_SM_NOBIGG= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_NOBIGG_T40/All_time_steps/','m01s01i208'))[0]
+cube_noice = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/NOICE/All_time_steps/','m01s01i208'))[0]
+
+
 cube_2m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/All_time_steps/','m01s01i208'))[0]
 cube_2l = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_LESS/All_time_steps/','m01s01i208'))[0]
 cube = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s01i208'))[0]
@@ -125,18 +134,34 @@ grid_z1 = sc.interpolate.griddata(coord, sat_LW, (X,Y), method='linear')
 
 runs_dict=OrderedDict()
 runs_dict['Satellite']=grid_z1
-runs_dict['ALL_ICE_PROC']=cube[12].data
-runs_dict['BASE (CS)']=cube_csb[13].data
-#runs_dict['MEYERS (CS)']=cube_csbm[13].data
+#runs_dict['DEMOTT2010']=cube[12].data
+##runs_dict['BASE (CS)']=cube_csb[13].data
+##runs_dict['MEYERS (CS)']=cube_csbm[13].data
 #runs_dict['MEYERS']=cube_m[13].data
-#runs_dict['3_ORD_LESS']=cube_3ord[13].data
+##runs_dict['3_ORD_LESS']=cube_3ord[13].data
+#runs_dict['SINGLE_MOMENT']=cube_single[13].data
 #runs_dict['2_ORD_LESS']=cube_2l[13].data
 #runs_dict['2_ORD_MORE']=cube_2m[13].data
 #runs_dict['OLD_MICRO']=cube_oldm[13].data
+
+
+runs_dict['DEMOTT2010']=cube[12].data
+#runs_dict['BASE (CS)']=cube_csb[13].data
+#runs_dict['MEYERS (CS)']=cube_csbm[13].data
+#runs_dict['MEYERS']=cube_m[13].data
+runs_dict['SINGLE_MOMENT']=cube_single[13].data
+#runs_dict['SM_100_COOPER']=cube_SM_100_COOPER[13].data
+#runs_dict['SM_T40']=cube_SM_T40[13].data
+runs_dict['SM_LCOND_FALSE']=cube_SM_LCOND_FALSE[13].data
+runs_dict['SM_NOBIGG']=cube_SM_NOBIGG[13].data
+runs_dict['NOICE']=cube_noice[13].data
+#runs_dict['2_ORD_LESS']=cube_2l[13].data
+runs_dict['2_ORD_MORE']=cube_2m[13].data
+
 #runs_dict['GLOPROF']=cube_gloprof[13].data
-runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data
-runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data
-runs_dict['GP_HAM']=cube_gpham[13].data
+#runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data
+#runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data
+#runs_dict['GP_HAM']=cube_gpham[13].data
 
 #runs_dict['GLOMAP_PROFILE']=cube_gloprof[13].data
 #runs_dict['LARGE_DOM']=cube_large_dom[13].data
@@ -144,11 +169,11 @@ runs_dict['GP_HAM']=cube_gpham[13].data
 #grid_z2[grid_z2<0]=0
 #grid_z2[grid_z2==np.nan]=0
 levels=np.linspace(0,runs_dict['Satellite'].max(),15)#runs_dict['Satellite'].min()
-levels=np.linspace(0,750,15)#runs_dict['Satellite'].min()
-levels_bin=np.linspace(0,runs_dict['Satellite'].max(),30)#runs_dict['Satellite'].min()
-levels_bin=np.linspace(0,750,150)#runs_dict['Satellite'].min()
-stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='TOA shortwave (CCN) Wm-2')
-stc.plot_PDF(runs_dict,levels_bin,variable_name='TOA shortwave (CCN) Wm-2')
+levels=np.linspace(120,700,15)#runs_dict['Satellite'].min()
+levels_bin=np.linspace(120,runs_dict['Satellite'].max(),30)#runs_dict['Satellite'].min()
+levels_bin=np.linspace(120,700,80)#runs_dict['Satellite'].min()
+stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='TOA shortwave Wm-2')
+stc.plot_PDF(runs_dict,levels_bin,variable_name='TOA shortwave  Wm-2')
 
 
 

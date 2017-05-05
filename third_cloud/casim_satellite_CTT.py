@@ -17,7 +17,7 @@ sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import iris.quickplot as qp
 import numpy as np
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animationlt
@@ -30,7 +30,7 @@ import scipy as sc
 from scipy.io import netcdf
 import time
 import scipy
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE/Satellite_Comparison')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 font = {'family' : 'normal',
         'weight' : 'normal',
@@ -41,9 +41,9 @@ runs_dict=OrderedDict()
 
 matplotlib.rc('font', **font)
 
-path='/nfs/a201/eejvt/CASIM/SECOND_CLOUD/SATELLITE/'
+#path='/nfs/a201/eejvt/CASIM/SECOND_CLOUD/SATELLITE/'#download data and change
 SDS_NAME  = 'Cloud_Top_Temperature'
-hdf  =SD.SD(path+'MODIS/'+'MOD06_L2.A2015060.1050.006.2015061055531.hdf')
+#hdf  =SD.SD(path+'MODIS/'+'MOD06_L2.A2015060.1050.006.2015061055531.hdf')
 #print hdf.datasets().keys()
 sds = hdf.select(SDS_NAME)
 data = sds.get()
@@ -96,11 +96,11 @@ it=16
 runs_dict=OrderedDict()
 runs_dict['Satellite']=grid_z1
 runs_dict['DM10']=cube_DM10[it].data
-#runs_dict['GLO_HIGH']=cube_GLO_HIGH[16].data
-#runs_dict['GLO_MEAN']=cube_GLO_MEAN[16].data
-#runs_dict['GLO_MIN']=cube_GLO_MIN[16].data
-#runs_dict['GP_HAM_DMDUST']=cube_GP_HAM_DMDUST[16].data
-#runs_dict['MEYERS']=cube_MEYERS[16].data
+runs_dict['GLO_HIGH']=cube_GLO_HIGH[16].data
+runs_dict['GLO_MEAN']=cube_GLO_MEAN[16].data
+runs_dict['GLO_MIN']=cube_GLO_MIN[16].data
+runs_dict['GP_HAM_DMDUST']=cube_GP_HAM_DMDUST[16].data
+runs_dict['MEYERS']=cube_MEYERS[16].data
 variable='2nd CTT'
 levels=np.linspace(250,273,15)
 stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name=variable)

@@ -48,6 +48,7 @@ home_dir='/nfs/see-fs-01_users/eejvt/'
 INP_data_dir='/nfs/a107/eejvt/INP_DATA/'
 a107='/nfs/a107/eejvt/'
 a201='/nfs/a201/eejvt/'
+bc_folder='/nfs/see-fs-01_users/eejvt/BC/'
 days_end_month=np.array([0,31,59,90,120,151,181,212,243,273,304,334,365])
 
 rhocomp  = np.array([1769.,    1500.,    1500. ,   1600.,    2650.,    1500. ,2650.])*1e+9
@@ -63,7 +64,7 @@ pressure=np.array([   4.47640944,   28.3048172 ,   48.96452713,   69.30890656,
         780.80426025,  822.40307617,  861.61694336,  897.16723633,
         927.43457031,  950.37841797,  963.48803711], dtype=np.float32)
 
-# terrestrial_grid=np.genfromtxt('/nfs/a107/eejvt/PYTHON_CODE/terrestrial_grid.dat')
+# terrestrial_grid=np.genfromtxt('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/terrestrial_grid.dat')
 
 def feld_parametrization(T):
     ns=np.exp((-1.03802178356815*T)+275.263379304105)
@@ -311,12 +312,12 @@ def plot(data,title=' ',projection='cyl',file_name=datetime.datetime.now().isofo
     cb.set_label(cblabel,fontsize=f_size)
     cb.ax.tick_params(labelsize=f_size)#plt.colorbar().set_label(label='a label',size=15,weight='bold')
     plt.title(title,fontsize=f_size)
-    if os.path.isdir("PLOTS/"):
-        plt.savefig('PLOTS/'+file_name+'.'+saving_format,format=saving_format,dpi=dpi, bbox_inches='tight')
-        plt.savefig('PLOTS/'+file_name+'.svg',format='svg', bbox_inches='tight')
-    else:
-        plt.savefig(file_name+'.'+saving_format,format=saving_format,dpi=dpi, bbox_inches='tight')
-        plt.savefig(file_name+'.svg',format='svg', bbox_inches='tight')
+#    if os.path.isdir("PLOTS/"):
+#        plt.savefig('PLOTS/'+file_name+'.'+saving_format,format=saving_format,dpi=dpi, bbox_inches='tight')
+#        plt.savefig('PLOTS/'+file_name+'.svg',format='svg', bbox_inches='tight')
+#    else:
+    plt.savefig(file_name+'.'+saving_format,format=saving_format,dpi=dpi, bbox_inches='tight')
+    plt.savefig(file_name+'.svg',format='svg', bbox_inches='tight')
     if show:
         plt.show()
     #print clevs
@@ -461,10 +462,10 @@ def artic_plot(data,title='None',file_name=datetime.datetime.now().isoformat(),s
 
 
 def antartic_plot(data,title='None',file_name=datetime.datetime.now().isoformat(),show=1,cblabel='$\mu g/ m^3$',cmap=plt.cm.RdBu_r,clevs=np.zeros(1),return_fig=0,dpi=300,lon=0,lat=0,colorbar_format_sci=0,saving_format='svg',scatter_points=0,height_sat=3000000):
-    fig=plt.figure(figsize=(20, 20))
+    fig=plt.figure(figsize=(8, 8))
     m = fig.add_subplot(1,1,1)
     m = Basemap(projection='nsper',lon_0=0,lat_0=-90,
-        satellite_height=height_sat*1000.,resolution='l')
+        satellite_height=height_sat*100000.,resolution='l')
     m.drawcoastlines()
 
     if isinstance(lon, int):
@@ -883,7 +884,7 @@ def plot_comparison(simulated_points,data_points,lat_points_index=3,lon_points_i
     plt.ylabel('Simulated ($cm^{-3}$)')
     plt.xlabel('Observed ($cm^{-3}$)')
 
-    x=np.linspace(0.1*np.min(simulated_points[:,0]),10*np.max(simulated_points[:,0]),100)
+    x=np.linspace(0.1*np.min(data_points[:,inpconc_index]),10*np.max(data_points[:,inpconc_index]),100)
     #global x
     r=np.corrcoef(data_points[:,inpconc_index],simulated_points[:,0])
     rmsd=RMSD(data_points[:,inpconc_index],simulated_points[:,0])
@@ -893,6 +894,7 @@ def plot_comparison(simulated_points,data_points,lat_points_index=3,lon_points_i
     plt.plot(x,10*x,'k--')
     plt.plot(x,0.1*x,'k--')
     plt.xlim(x[0],x[-1])
+    plt.ylim(0.1*np.min(simulated_points[:,0]),10*np.max(simulated_points[:,0]))
     plt.xscale('log')
     plt.yscale('log')
 
@@ -1263,8 +1265,6 @@ def glopl_to_emacpl(glopl):
 
 
 
-
-
 import scipy.interpolate
 import scipy.ndimage
 
@@ -1434,33 +1434,37 @@ lat=np.array([ 87.86380005,  85.09650421,  82.31289673,  79.52560425,
        -79.52560425, -82.31289673, -85.09650421, -87.86380005], dtype=np.float32)
 
 
+try:
+    import smtplib
+    from email.MIMEMultipart import MIMEMultipart
+    from email.MIMEText import MIMEText
 
-import smtplib
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEText import MIMEText
+    def send_email():
+        import sys
+        #server = smtplib.SMTP('smtp.gmail.com', 587)
+        #server.starttls()
+        #server.login("my.alerts.jesus.vergara@gmail.com ", "palomaSS")
 
-def send_email():
-    import sys
-    #server = smtplib.SMTP('smtp.gmail.com', 587)
-    #server.starttls()
-    #server.login("my.alerts.jesus.vergara@gmail.com ", "palomaSS")
+        fromaddr = "my.alerts.jesus.vergara@gmail.com"
+        toaddr = "eejvt@leeds.ac.uk"
+        msg = MIMEMultipart()
+        msg['From'] = fromaddr
+        msg['To'] = toaddr
+        msg['Subject'] = "Script finished"
 
-    fromaddr = "my.alerts.jesus.vergara@gmail.com"
-    toaddr = "eejvt@leeds.ac.uk"
-    msg = MIMEMultipart()
-    msg['From'] = fromaddr
-    msg['To'] = toaddr
-    msg['Subject'] = "Script finished"
-
-    body = "Your script \n %s  \n has finished "%sys.argv[0]
-    msg.attach(MIMEText(body, 'plain'))
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(fromaddr, "palomaSS")
-    text = msg.as_string()
-    server.sendmail(fromaddr, toaddr, text)
-    server.quit()
-
+        body = "Your script \n %s  \n has finished "%sys.argv[0]
+        if len(sys.argv[0])>1:
+            body=body+'\n'+str(sys.argv[1:]) 
+        msg.attach(MIMEText(body, 'plain'))
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(fromaddr, "palomaSS")
+        text = msg.as_string()
+        server.sendmail(fromaddr, toaddr, text)
+        server.quit()
+except:
+    def send_email():
+        print 'send_email function could not be loaded'
 
 
 

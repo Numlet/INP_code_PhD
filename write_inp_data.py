@@ -12,7 +12,7 @@ Code to save INP data in the same manner as usual
 
 import numpy.ma as ma
 import sys
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import numpy as np
 from random import random

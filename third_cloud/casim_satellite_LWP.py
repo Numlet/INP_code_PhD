@@ -16,7 +16,7 @@ sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import iris.quickplot as qp
 import numpy as np
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animationlt
@@ -28,7 +28,7 @@ import datetime
 import scipy as sc
 from scipy.io import netcdf
 import time
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE/Satellite_Comparison')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 
 from collections import OrderedDict
@@ -109,6 +109,10 @@ cube_GLO_MEAN = iris.load(ukl.Obtain_name(sim_path+'/GLO_MEAN/'+sub_folder,code)
 cube_GLO_MIN = iris.load(ukl.Obtain_name(sim_path+'/GLO_MIN/'+sub_folder,code))[0]
 cube_GP_HAM_DMDUST = iris.load(ukl.Obtain_name(sim_path+'/DM_DUST/'+sub_folder,code))[0]
 cube_MEYERS = iris.load(ukl.Obtain_name(sim_path+'/MEYERS/'+sub_folder,code))[0]
+cube_global= iris.load(ukl.Obtain_name(sim_path+'/GLOBAL/'+sub_folder,code))[0]
+
+cube_global = cube_global.regrid(cube_DM10, iris.analysis.Linear())
+
 #%%
 
 
@@ -158,6 +162,7 @@ plt.imshow(grid_z1)
 it=15
 runs_dict=OrderedDict()
 runs_dict['Satellite']=grid_z1
+runs_dict['GLOBAL']=cube_global[it].data
 runs_dict['DM10']=cube_DM10[it].data
 runs_dict['GLO_HIGH']=cube_GLO_HIGH[it].data
 #runs_dict['MEYERS (CS)']=cube_csbm[13].data
@@ -175,7 +180,7 @@ runs_dict['MEYERS']=cube_MEYERS[it].data
 levels=np.arange(0.00,0.5,0.05).tolist()
 same_bins=np.linspace(0.00,0.5,100)
 
-#levels=np.linspace(runs_dict['Satellite (AMSR2)'].min(),runs_dict['Satellite (AMSR2)'].max(),15)
+levels=np.linspace(runs_dict['Satellite'].min(),runs_dict['Satellite'].max(),15)
 stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='LWP mm')
 stc.plot_PDF(runs_dict,same_bins,
              variable_name='LWP mm')

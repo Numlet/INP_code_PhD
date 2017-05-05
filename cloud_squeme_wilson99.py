@@ -27,7 +27,6 @@ plt.plot(Ds,Nice(Ds,T=-20))
 plt.xscale('log')
 plt.yscale('log')
 '''
-
 def mice(D):
     return 0.069*D**2
 
@@ -128,6 +127,7 @@ lam=solve_lamda(Mt,T=T_init)
 
 Ds=np.logspace(-7,-4,10000)
 Mt_init=1*1e-12#kg
+Mt_init=0#kg
 T_init=-30
 T_init=-20
 plt.figure()

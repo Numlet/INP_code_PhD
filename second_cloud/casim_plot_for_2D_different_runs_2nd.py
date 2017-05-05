@@ -27,7 +27,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animationlt
 #from mayavi import mlab
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE/Satellite_Comparison')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 
 import variable_dict as vd
@@ -60,8 +60,8 @@ stash_code='m01s00i254'
 stash_code='m01s01i235'
 stash_code='m01s09i223'#TOTAL_CLOUD_TOP_HEIGHT_(KFT)
 stash_code='m01s09i216'#TOTAL_CLOUD_AMOUNT_-_RANDOM_OVERLAP
-stash_code='m01s01i208'#toa_outgoing_shortwave_flux.nc
 stash_code='m01s02i205'#toa_outgoing_longwave_flux
+stash_code='m01s01i208'#toa_outgoing_shortwave_flux.nc
 stash_code='LWP'#LWP
 #%%
 
@@ -97,13 +97,14 @@ ordered_list=['ALL_ICE_PROC','3_ORD_LESS']
 ordered_list=['BASE_CONTACT','ALL_ICE_PROC','NO_ICE']
 ordered_list=['ALL_ICE_PROC','NO_HALLET','3_ORD_LESS']
 ordered_list=['ALL_ICE_PROC','3_ORD_LESS','2_ORD_MORE']
-ordered_list=['BASE_DM_DUST']
+ordered_list=['BASE_DM_DUST','MEYERS']
 run_dict={}
 #run_dict['DEMOTT']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/DEMOTT3ORD/All_time_steps/','DEMOTT')
 #run_dict['ALL_ICE_PROC']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','ALL_ICE_PROC')
 #run_dict['BASE_CONTACT']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/BASE_CONTACT_242/All_time_steps/','BASE_CONTACT')
 #run_dict['NO_HALLET']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/NO_HALLET/All_time_steps/','NO_HALLET')
 run_dict['BASE_DM_DUST']=Experiment('/nfs/a201/eejvt/CASIM/SECOND_CLOUD/GP_HAM_DMDUST/All_time_steps/','BASE_DM_DUST')
+run_dict['MEYERS']=Experiment('/nfs/a201/eejvt/CASIM/SECOND_CLOUD/MEYERS/All_time_steps/','MEYERS')
 
 #run_dict['NO_HALLET']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/NO_HALLET/All_time_steps/','NO_HALLET')
 #run_dict['OLD_BASE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/BASE_RUN2/All_time_steps/','OLD_BASE')
@@ -165,6 +166,7 @@ min_val = np.min(sample_cube[:,:,:].data[np.nonzero(sample_cube[:,:,:].data)])
 vertical_levels=np.linspace(min_val,max_val,9).tolist()
 diff_levels=np.linspace(-max_val,max_val,18).tolist()
 cube_list=[]
+vertical_levels=np.linspace(0.0001,0.7,9).tolist()
 #lats=sample_cube.coord('grid_latitude').points-52
 #lons=sample_cube.coord('grid_longitude').points[:]-180
 #lons=np.arange(-0.02*250,250*0.02,0.02)[0:]

@@ -16,7 +16,7 @@ sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import iris.quickplot as qp
 import numpy as np
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import matplotlib.pyplot as plt
 import matplotlib.animation as animationlt
@@ -28,7 +28,7 @@ import datetime
 import scipy as sc
 from scipy.io import netcdf
 import time
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE/Satellite_Comparison')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 
 from collections import OrderedDict
@@ -98,6 +98,11 @@ show_somedata(dataset)
 #%%
 
 cube_3ord = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/3_ORD_LESS_762/L1/','LWP'))[0]
+cube_single = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SINGLE_MOMENT/L1/','LWP'))[0]
+cube_SM_100_COOPER = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_100_COOPER/L1/','LWP'))[0]
+cube_SM_T40 = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_T40/L1/','LWP'))[0]
+cube_SM_LCOND_FALSE = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_LCOND_FALSE/L1/','LWP'))[0]
+cube_noice = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/NOICE/L1/','LWP'))[0]
 cube_2l = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_LESS/L1/','LWP'))[0]
 cube_2m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/L1/','LWP'))[0]
 cube = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/L1/','LWP'))[0]
@@ -112,8 +117,10 @@ cube_m = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUE
 cube_gloprof= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLOMAP_PROFILE_DM/L1/','LWP'))[0]
 cube_gl_csed=  iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HIGH_CSED/L1/','LWP'))[0]
 cube_gl_low_csed=  iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_LOW_CSED/L1/','LWP'))[0]
+cube_SM_NOBIGG= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_NOBIGG_T40/L1/','LWP'))[0]
 
 cube_gpham= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HAMISH/L1/','LWP'))[0]
+#cube_global= iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/GLOBAL/L1/','LWP'))[0]
 
 
 
@@ -155,14 +162,21 @@ grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 
 runs_dict=OrderedDict()
 runs_dict['Satellite (AMSR2)']=grid_z1
-runs_dict['ALL_ICE_PROC']=cube[12].data
+runs_dict['DEMOTT2010']=cube[12].data
 #runs_dict['BASE (CS)']=cube_csb[13].data
 #runs_dict['MEYERS (CS)']=cube_csbm[13].data
-runs_dict['MEYERS']=cube_m[13].data
-runs_dict['2_ORD_LESS']=cube_2l[13].data
+#runs_dict['MEYERS']=cube_m[13].data
+runs_dict['SINGLE_MOMENT']=cube_single[13].data
+#runs_dict['SM_100_COOPER']=cube_SM_100_COOPER[13].data
+#runs_dict['SM_T40']=cube_SM_T40[13].data
+runs_dict['SM_LCOND_FALSE']=cube_SM_LCOND_FALSE[13].data
+runs_dict['SM_NOBIGG']=cube_SM_NOBIGG[13].data
+
+runs_dict['NOICE']=cube_noice[13].data
+#runs_dict['2_ORD_LESS']=cube_2l[13].data
 runs_dict['2_ORD_MORE']=cube_2m[13].data
 
-runs_dict['GLOPROF']=cube_gloprof[13].data
+#runs_dict['GLOPROF']=cube_gloprof[13].data
 #runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data
 #runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data
 #runs_dict['GP_HAM']=cube_gpham[13].data
@@ -172,9 +186,9 @@ levels=np.arange(0,0.45,0.05).tolist()
 same_bins=np.linspace(0,0.5,100)
 
 #levels=np.linspace(runs_dict['Satellite (AMSR2)'].min(),runs_dict['Satellite (AMSR2)'].max(),15)
-stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='LWP mm')
+stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='(first) LWP mm')
 stc.plot_PDF(runs_dict,same_bins,
-             variable_name='LWP mm')
+             variable_name=' (first) LWP mm')
 
 
 

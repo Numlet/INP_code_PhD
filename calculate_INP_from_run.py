@@ -8,7 +8,7 @@ Created on Mon Apr 25 09:14:16 2016
 
 import numpy as np
 import sys
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE')
 import Jesuslib as jl
 import os
 from scipy.io.idl import readsav
@@ -144,14 +144,14 @@ def calculate_INP_feld_ext_mean_area_fitted(T,fel_modes=[2,3]):
     INP=np.zeros(Nd.shape)
     for i in fel_modes:
         print 'mode',i
-        area_particle=area_lognormal_per_particle(rmean,std[i])
+        area_particle=area_lognormal_per_particle(rmean[i,],std[i])
         exponent=ns*area_particle
         ff=np.zeros_like(exponent)
         ff[exponent>=1e-5]=1-np.exp(-exponent[exponent>=1e-5])
         ff[exponent<1e-5]=exponent[exponent<1e-5]
         
         ff_fitted=jl.correct_ff(ff,std[i])
-        INP=Nd*ff_fitted
+        INP[i,]=INP[i,]+Nd*ff_fitted
     return INP
 
 INP_feldext_alltemps=np.zeros((38,31,64,128,12))
@@ -163,7 +163,7 @@ for i in range (38):
     INP_feldext_alltemps[i,]=calculate_INP_feld_ext_mean_area_fitted(-i+273.15).sum(axis=0)
 #    INP_feldext_alltemps_modes[i,]=calculate_INP_feld_ext_mean_area_fitted(-i+273.15)
 
-np.save(folder+'INP_feldext_alltemps_daily.npy',INP_feldext_alltemps)
+np.save(folder+'INP_feldext_alltemps_daily_with_coarse.npy',INP_feldext_alltemps)
 
 jl.send_email()
 ##%%

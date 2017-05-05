@@ -27,7 +27,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animationlt
 #from mayavi import mlab
-sys.path.append('/nfs/a107/eejvt/PYTHON_CODE/Satellite_Comparison')
+sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 
 import variable_dict as vd
