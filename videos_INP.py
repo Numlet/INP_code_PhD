@@ -26,8 +26,8 @@ plt.plot([])
 INP_niemand_daily=np.load('/nfs/a201/eejvt/INP_niemand_ext_alltemps.npy')*1e6#m3
 plt.show()
 #%%
-#INP_feldspar_alltemps_daily=np.load('/nfs/a201/eejvt/MARINE_PARAMETERIZATION/DAILY/INP_feldext_alltemps_daily.npy')*1e6#m3
-#INP_marine_alltemps_daily=np.load('/nfs/a201/eejvt/MARINE_PARAMETERIZATION/DAILY/INP_marine_alltemps_daily.npy')#m3
+INP_feldspar_alltemps_daily=np.load('/nfs/a201/eejvt/MARINE_PARAMETERIZATION/DAILY/INP_feldext_alltemps_daily.npy')*1e6#m3
+INP_marine_alltemps_daily=np.load('/nfs/a201/eejvt/MARINE_PARAMETERIZATION/DAILY/INP_marine_alltemps_daily.npy')#m3
 
 
 #%%
@@ -120,67 +120,67 @@ print date(365)
 print date(330)
 #%%
 sl=15
-levels=[1*(4*(i%2)**2+1)*10**(i/2)for i in np.arange(-12,2,1)]
+levels=[1*(4*(i%2)**2+1)*10**(i/2)for i in np.arange(-13,1,1)]
 levels[0]=0.0
 levels[-1]=500
 writer = FFMpegWriter(fps=5, metadata=metadata)
 sl=20
 matplotlib.rcParams.update({'font.size': sl})
 #%%
-#fig=plt.figure(figsize=(20, 12))
-#name='Feldspar_15'
-#with writer.saving(fig,'/nfs/a201/eejvt/'+name+".mp4", 200):
-#    for i in range(INP_feldspar_alltemps_daily.shape[-1]):
+fig=plt.figure(figsize=(20, 12))
+name='Feldspar_15_600hpa'
+with writer.saving(fig,'/nfs/a201/eejvt/'+name+".mp4", 200):
+    for i in range(INP_feldspar_alltemps_daily.shape[-1]):
 #    for i in range(5):#INP_feldspar_alltemps_daily.shape[-1]):
 
-#        print i
-#        plot(INP_feldspar_alltemps_daily[15,30,:,:,i]*1e-3,clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
-#        title='Vergara-Temprado et al. (2017) ACP Feldspar $[INP]_{-15^oC}$ Surface Level '+date(i+1),
-#        file_name=jl.a201+'feldspar_inp_surface_15',colorbar_format_sci=1,
-#        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
-#        writer.grab_frame()
-#plt.close()        
+        print i
+        plot(INP_feldspar_alltemps_daily[15,20,:,:,i]*1e-3,clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
+        title='Vergara-Temprado et al. (2017) ACP Feldspar $[INP]_{-15^oC}$ 600hpa '+date(i+1),
+        file_name=jl.a201+'feldspar_inp_600hpa_15',colorbar_format_sci=1,
+        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
+        writer.grab_frame()
+plt.close()        
 #%%
-#fig=plt.figure(figsize=(20, 12))
-#sl=15
-#levels=[1*(4*(i%2)**2+1)*10**(i/2)for i in np.arange(-12,2,1)]
-#levels[0]=0.0
-#writer = FFMpegWriter(fps=5, metadata=metadata)
-#sl=20
-#matplotlib.rcParams.update({'font.size': sl})
-#name='Marine_15'
-#with writer.saving(fig,'/nfs/a201/eejvt/'+name+".mp4", 200):
-#    for i in range(INP_feldspar_alltemps_daily.shape[-1]):
-#        print i
-#        plot(INP_marine_alltemps_daily[15,30,:,:,i]*1e-3,clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
-#        title='Vergara-Temprado et al. (2017) ACP Marine Organics $[INP]_{-15^oC}$ Surface Level '+date(i+1),
-#        file_name=jl.a201+'feldspar_inp_surface_15',colorbar_format_sci=1,
-#        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
-#        writer.grab_frame()
-#plt.close()        
+fig=plt.figure(figsize=(20, 12))
+sl=15
+levels=[1*(4*(i%2)**2+1)*10**(i/2)for i in np.arange(-12,2,1)]
+levels[0]=0.0
+writer = FFMpegWriter(fps=5, metadata=metadata)
+sl=20
+matplotlib.rcParams.update({'font.size': sl})
+name='Marine_15_600hpa'
+with writer.saving(fig,'/nfs/a201/eejvt/'+name+".mp4", 200):
+    for i in range(INP_feldspar_alltemps_daily.shape[-1]):
+        print i
+        plot(INP_marine_alltemps_daily[15,20,:,:,i]*1e-3,clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
+        title='Vergara-Temprado et al. (2017) ACP Marine Organics $[INP]_{-15^oC}$ 600hpa '+date(i+1),
+        file_name=jl.a201+'feldspar_inp_600hpa_15',colorbar_format_sci=1,
+        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
+        writer.grab_frame()
+plt.close()        
 #%%
-#fig=plt.figure(figsize=(20, 12))
-#name='Total_15'
-#with writer.saving(fig,'/nfs/a201/eejvt/'+name+".mp4", 200):
-#    for i in range(INP_feldspar_alltemps_daily.shape[-1]):
-#        print i
-#        plot(INP_marine_alltemps_daily[15,30,:,:,i]*1e-3+INP_feldspar_alltemps_daily[15,30,:,:,i]*1e-3,clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
-#        title='Vergara-Temprado et al. (2017) ACP Total $[INP]_{-15^oC}$ Surface Level '+date(i+1),
-#        file_name=jl.a201+'feldspar_inp_surface_15',colorbar_format_sci=1,
-#        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
-#        writer.grab_frame()
-#plt.close()        
+fig=plt.figure(figsize=(20, 12))
+name='Total_15_600hpa'
+with writer.saving(fig,'/nfs/a201/eejvt/'+name+".mp4", 200):
+    for i in range(INP_feldspar_alltemps_daily.shape[-1]):
+        print i
+        plot(INP_marine_alltemps_daily[15,20,:,:,i]*1e-3+INP_feldspar_alltemps_daily[15,30,:,:,i]*1e-3,clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
+        title='Vergara-Temprado et al. (2017) ACP Total $[INP]_{-15^oC}$ 600hpa '+date(i+1),
+        file_name=jl.a201+'feldspar_inp_600hpa_15',colorbar_format_sci=1,
+        cmap=cmap,saving_format='png',f_size=sl,dpi=100)
+        writer.grab_frame()
+plt.close()        
 
 #jl.send_email()
 
 fig=plt.figure(figsize=(20, 12))
-name='Dust_15'
+name='Dust_15_600hpa'
 with writer.saving(fig,'/nfs/a201/eejvt/'+name+".mp4", 200):
     for i in range(INP_niemand_daily.shape[-1]):
         print i
-        plot(INP_niemand_daily[15,30,:,:,i]*1e-3,clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
-        title='Vergara-Temprado et al. (2017) ACP Dust $[INP]_{-15^oC}$ Surface Level '+date(i+1),
-        file_name=jl.a201+'feldspar_inp_surface_15',colorbar_format_sci=1,
+        plot(INP_niemand_daily[15,20,:,:,i]*1e-3,clevs=levels,cblabel='$[INP]_{-15}/L^{-1}$',
+        title='Vergara-Temprado et al. (2017) ACP Dust $[INP]_{-15^oC}$ 600hpa '+date(i+1),
+        file_name=jl.a201+'feldspar_inp_600hpa_15',colorbar_format_sci=1,
         cmap=cmap,saving_format='png',f_size=sl,dpi=100)
         writer.grab_frame()
 plt.close()        

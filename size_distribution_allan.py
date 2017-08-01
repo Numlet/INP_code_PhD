@@ -332,10 +332,10 @@ title=' Amundsen'
 
 lat_point=48.56#Ucluelet
 lon_point=-125.32#Ucluelet
-title=' Ucluelet'
+title=' Ucluelet'#august
 lat_point=54.59#
 lon_point=-55.61#
-title=' Amundsen (Labrador Sea)'
+title=' Amundsen (Labrador Sea)'#July
       
 lat_point=82.45#
 lon_point=-62.51#

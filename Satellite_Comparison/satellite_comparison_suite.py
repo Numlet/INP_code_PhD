@@ -41,6 +41,9 @@ def PDF(data,nbins=100):
     max_val=data.max()
     if isinstance(nbins,np.ndarray):
         bins=nbins
+        data=data.flatten()
+        data=data[data<bins[0]]
+        data=data[data>bins[-1]]
     else:
         bins=np.linspace(min_val,max_val,nbins)
     size_bin=bins[1:]-bins[:-1]
@@ -114,9 +117,16 @@ def plot_map(maps_dict,levels,lat,lon,variable_name='test',means=0):
 
 
 
-def clean_cube(cube,value=50):
-    new_cube=cube[:,value:,value:]
-    new_cube=new_cube[:,:-value,:-value]
+def clean_cube(cube,value=100):
+    if len(cube.shape)==4:
+        new_cube=cube[:,:,value:,value:]
+        new_cube=new_cube[:,:,:-value,:-value]
+    elif len(cube.shape)==3:
+        new_cube=cube[:,value:,value:]
+        new_cube=new_cube[:,:-value,:-value]
+    else:
+        new_cube=cube[value:,value:]
+        new_cube=new_cube[:-value,:-value]
     return new_cube
 
 #%%
@@ -154,7 +164,7 @@ def plot_PDF(maps_dict,same_bins,variable_name='test'):
         data_not_nan=data[np.logical_not(np.isnan(data))]
         bins,pdf=PDF(data_not_nan,same_bins)
         if i==0:
-            plt.plot(bins, pdf,label=name_run)
+            plt.plot(bins, pdf,'k--',label=name_run,lw=3)
             sat_pdf=np.copy(pdf)
         else:
             plt.plot(bins, pdf,label=name_run+' R=%1.2f'%np.corrcoef(pdf[:],sat_pdf[:])[0,1])
@@ -167,9 +177,15 @@ def plot_PDF(maps_dict,same_bins,variable_name='test'):
     plt.show()
 
 
-
-
-
+def coarse_grain(data,factor=5):
+    if data.ndim==2:
+        a=[0,0]
+        a[0]=data.shape[0]/factor
+        a[1]=data.shape[1]/factor
+        new_data=jl.congrid(data,a)
+    else:
+        raise NameError('Need data with 2 horizontal dimensions')
+    return new_data
 
 
 

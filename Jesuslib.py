@@ -208,6 +208,27 @@ def read_data(simulation):
     #s=readsav('/nfs/a107/eejvt/IDL_CODE/glat.sav',idict=s)
     return s
 #s1,_=read_data('WITH_ICE_SCAV')
+def date(iday):
+    month=0
+    for imonth in range(len(days_end_month)):
+        if iday-1>=days_end_month[imonth]:        
+            month=np.copy(imonth)
+    month_str=months_str_upper_case[month]
+    
+    day_str=str(iday-days_end_month[month])
+    
+    day_end='th'
+    if day_str=='1'or day_str=='21' or day_str=='31':
+        day_end='st'
+    if day_str=='2' or day_str=='22':
+        day_end='nd'
+    if day_str=='3' or day_str=='23':
+        day_end='rd'
+    if len(day_str)==1:
+        date='0'+day_str+day_end+' '+month_str
+    else:
+        date=day_str+day_end+' '+month_str
+    return date
 
 
 def RMSD(a,b):

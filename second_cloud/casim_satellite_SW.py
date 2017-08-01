@@ -69,7 +69,7 @@ sim_path='/nfs/a201/eejvt/CASIM/SECOND_CLOUD/'
 
 cube_DM10 =  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0])
 cube_GLO_HIGH =  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/GLO_HIGH/All_time_steps/','m01s01i208'))[0])
-#cube_GLO_MEAN=  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/GLO_MEAN/All_time_steps/','m01s01i208'))[0])
+cube_GLO_MEAN=  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/GLO_MEAN/All_time_steps/','m01s01i208'))[0])
 cube_GLO_MIN=  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/GLO_MIN/All_time_steps/','m01s01i208'))[0])
 cube_GP_HAM_DMDUST=  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/GP_HAM_DMDUST/All_time_steps/','m01s01i208'))[0])
 cube_MEYERS=  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/MEYERS/All_time_steps/','m01s01i208'))[0])

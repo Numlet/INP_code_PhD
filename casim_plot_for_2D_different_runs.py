@@ -63,6 +63,7 @@ stash_code='m01s01i208'#toa_outgoing_shortwave_flux.nc
 stash_code='m01s09i216'#TOTAL_CLOUD_AMOUNT_-_RANDOM_OVERLAP
 stash_code='Cloud_top_height'
 stash_code='Cloud_top_temperature'
+stash_code='IWP'
 #%%
 
 
@@ -84,7 +85,6 @@ class Experiment():
 ##run_dict['DEMOTT']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/DEMOTT3ORD/All_time_steps/','DEMOTT')
 ##run_dict['BASE_RUN']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_INITIAL_ICE/BASE_RUN/All_time_steps/','BASE_RUN')
 ##run_dict['3_ORD_LESS']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_INITIAL_ICE/3_ORD_LESS/All_time_steps/','3_ORD_LESS')
-##run_dict['NO_ICE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/NO_ICE/All_time_steps/','NO_ICE')
 #ordered_list=['BASE_RUN','3_ORD_LESS','NO_ICE']
 #ordered_list=['BASE_RUN','3_ORD_LESS']
 #ordered_list=['CONTACT_RUN','NO_HALLET']
@@ -110,10 +110,12 @@ run_dict['BASE_DM']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/G
 #run_dict['NO_HALLET']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/NO_HALLET/All_time_steps/','NO_HALLET')
 #run_dict['OLD_BASE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/BASE_RUN2/All_time_steps/','OLD_BASE')
 #run_dict['3_ORD_LESS']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/3_ORD_LESS_762/All_time_steps/','3_ORD_LESS')
+#run_dict['SM_100_COOPER']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_NOBIGG_T40/All_time_steps/','SM_100_COOPER')
 run_dict['SM_100_COOPER']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_100_COOPER/All_time_steps/','SM_100_COOPER')
-run_dict['SM_LCOND_FALSE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_LCOND_FALSE/All_time_steps/','SM_LCOND_FALSE')
+run_dict['SM_LCOND_FALSE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SM_T40/All_time_steps/','SM_LCOND_FALSE')
 #run_dict['2_ORD_MORE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/All_time_steps/','2_ORD_MORE')
-#run_dict['2_ORD_MORE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/All_time_steps/','2_ORD_MORE')
+run_dict['NO_ICE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/NOICE/All_time_steps/','NO_ICE')
+run_dict['2_ORD_MORE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/2_ORD_MORE/All_time_steps/','2_ORD_MORE')
 #run_dict['NO_ICE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/NOICE/All_time_steps/','NO_ICE')
 #run_dict['NO_ICE']=Experiment('/nfs/a201/eejvt/CASIM/SO_KALLI/SECOND_DOMAIN/NOICE/All_time_steps/','NO_ICE')
 ordered_list=run_dict.keys()
@@ -196,7 +198,10 @@ for name in ordered_list:
     names=names+'-'+name
 vertical_levels=np.linspace(0,1800,15).tolist()
 vertical_levels=np.linspace(250,280,15).tolist()
-
+vertical_levels=np.linspace(0,0.8,15).tolist()
+vertical_levels[0]=0.0001
+vertical_levels[-1]=1
+#vertical_levels[2]=0.001
 with writer.saving(fig,'/nfs/a201/eejvt/SO_VIDEOS/2D_141116'+sample_cube.var_name+'_'+names+".mp4", 200):
     for it in range(len(sample_cube.coord('time').points)-1):
 #        try:
@@ -228,7 +233,7 @@ with writer.saving(fig,'/nfs/a201/eejvt/SO_VIDEOS/2D_141116'+sample_cube.var_nam
             except:
                 plot_cube=cube_list[ir][:,:,:].extract(iris.Constraint(time=sample_cube.coord('time').points[it-1])).data
 #                a='asfdsasd'
-            mapable=x.contourf(lons,lats, plot_cube,vertical_levels, cmap='viridis')
+            mapable=x.contourf(lons,lats, plot_cube,vertical_levels, cmap='jet')
             if ir+1==n_runs:
                 if it==0:
                     cb=plt.colorbar(mapable,label=sample_cube.units.origin)
@@ -271,41 +276,41 @@ with writer.saving(fig,'/nfs/a201/eejvt/SO_VIDEOS/2D_141116'+sample_cube.var_nam
 
 #for cube in cube_list:
 #%%
-first=[]
-second=[]
-#plt.plot()
-for it in range(len(sample_cube.coord('time').points)-1):
-    first.append(cube_list[0][:,:,0:].extract(iris.Constraint(time=sample_cube.coord('time').points[it])).data.mean())
-    second.append(cube_list[1][:,:,0:].extract(iris.Constraint(time=sample_cube.coord('time').points[it])).data.mean())
-
-plt.plot(first,label=ordered_list[0])
-plt.plot(second,label=ordered_list[1])
-plt.legend()
-plt.show()
-print np.array(first).sum()
-print np.array(second).sum()
-
-
-#%%
-sample_cube=run_dict[ordered_list[0]].cube
-time_coord=sample_cube.coord('time')
-time_coord.convert_units('seconds since 1970-01-01 00:00:0.0')
-
-times1=[datetime.datetime.fromtimestamp(time_coord.points[it]).strftime('%D %H:%M:%S') for it in range(len(time_coord.points))]
-
-
-sample_cube=run_dict[ordered_list[1]].cube
-time_coord=sample_cube.coord('time')
-time_coord.convert_units('seconds since 1970-01-01 00:00:0.0')
-
-times2=[datetime.datetime.fromtimestamp(time_coord.points[it]).strftime('%D %H:%M:%S') for it in range(len(time_coord.points))]
-
-
-for i in range(len(times2)):
-    print times1[i]==times2[i]
-#    if not times1[i]==times2[i]
-
-
+#first=[]
+#second=[]
+##plt.plot()
+#for it in range(len(sample_cube.coord('time').points)-1):
+#    first.append(cube_list[0][:,:,0:].extract(iris.Constraint(time=sample_cube.coord('time').points[it])).data.mean())
+#    second.append(cube_list[1][:,:,0:].extract(iris.Constraint(time=sample_cube.coord('time').points[it])).data.mean())
+#
+#plt.plot(first,label=ordered_list[0])
+#plt.plot(second,label=ordered_list[1])
+#plt.legend()
+#plt.show()
+#print np.array(first).sum()
+#print np.array(second).sum()
+#
+#
+##%%
+#sample_cube=run_dict[ordered_list[0]].cube
+#time_coord=sample_cube.coord('time')
+#time_coord.convert_units('seconds since 1970-01-01 00:00:0.0')
+#
+#times1=[datetime.datetime.fromtimestamp(time_coord.points[it]).strftime('%D %H:%M:%S') for it in range(len(time_coord.points))]
+#
+#
+#sample_cube=run_dict[ordered_list[1]].cube
+#time_coord=sample_cube.coord('time')
+#time_coord.convert_units('seconds since 1970-01-01 00:00:0.0')
+#
+#times2=[datetime.datetime.fromtimestamp(time_coord.points[it]).strftime('%D %H:%M:%S') for it in range(len(time_coord.points))]
+#
+#
+#for i in range(len(times2)):
+#    print times1[i]==times2[i]
+##    if not times1[i]==times2[i]
+#
+#
 
 
 

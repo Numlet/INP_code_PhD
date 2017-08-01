@@ -149,6 +149,7 @@ LWP_flat=LWP_flat[np.logical_not(np.isnan(LWP_flat))]
 
 
 
+#model_lons,model_lats=stc.unrotated_grid(stc.clean_cube(cube.copy()))
 model_lons,model_lats=stc.unrotated_grid(cube)
 
 coord=np.zeros([len(Xsat_flat),2])
@@ -176,6 +177,14 @@ runs_dict['NOICE']=cube_noice[13].data
 #runs_dict['2_ORD_LESS']=cube_2l[13].data
 runs_dict['2_ORD_MORE']=cube_2m[13].data
 
+         
+for run in runs_dict:
+    runs_dict[run]=stc.coarse_grain(stc.clean_cube(runs_dict[run]))
+#    runs_dict[run]=stc.clean_cube(runs_dict[run])
+model_lons,model_lats=stc.unrotated_grid(stc.clean_cube(cube))
+X,Y=np.meshgrid(model_lons, model_lats)
+X=stc.coarse_grain(X)
+Y=stc.coarse_grain(Y)
 #runs_dict['GLOPROF']=cube_gloprof[13].data
 #runs_dict['GP_HIGH_CSED']=cube_gl_csed[13].data
 #runs_dict['GP_LOW_CSED']=cube_gl_low_csed[13].data

@@ -1,3 +1,4 @@
+31
 # -*- coding: utf-8 -*-
 """
 Created on Thu Feb 18 09:43:37 2016
@@ -24,6 +25,7 @@ from scipy.integrate import quad
 rhocomp  = np.array([1769.,    1500.,    1500. ,   1600.,    2650.,    1500. ,2650.])#Kg/m3
 #rhocomp =rhocomp*1e+3#ug/cm3
 rhocomp =rhocomp*1e+9#ug/m3
+sav_fol='/nfs/a201/eejvt/BC_PAPER/'
 
 def murray(T):
     #T in C
@@ -98,111 +100,124 @@ temperatures_monthly=jl.from_daily_to_monthly(temperatures)
 #    ns=BC_parametrization_tom(-itemp)
 #    for imode in range(7):
 #        INP_BC_ext_min[itemp,:,:,:,:]=INP_BC_ext_min[itemp,:,:,:,:]+Nd[imode,:,:,:,:]*(1-np.exp(-ns*4*np.pi*rmean[imode,:,:,:,:]**2))
-
-INP_BC_ext_min=np.zeros((38,31,64,128,12))
-modes_vol=volumes_of_modes(s)
-BC_volfrac=(s.tot_mc_bc_mm_mode[:,:,:,:,:]/rhocomp[2])/modes_vol
-Nd=s.st_nd[:,:,:,:,:]*BC_volfrac
-rmean=s.rbardry[:,:,:,:,:]*1e2
-std=s.sigma[:]
-for itemp in range (0,38):
-    print itemp
-    ns=BC_parametrization_tom(-itemp)
+calculate=1
+calculate=False
+if calculate:
+    INP_BC_ext_min=np.zeros((38,31,64,128,12))
+    modes_vol=volumes_of_modes(s)
+    BC_volfrac=(s.tot_mc_bc_mm_mode[:,:,:,:,:]/rhocomp[2])/modes_vol
+    Nd=s.st_nd[:,:,:,:,:]*BC_volfrac
+    rmean=s.rbardry[:,:,:,:,:]*1e2
+    std=s.sigma[:]
+    for itemp in range (0,38):
+        print itemp
+        ns=BC_parametrization_tom(-itemp)
+        for imode in range(7):
+            area_particle=area_lognormal_per_particle(rmean[imode,:,:,:,:],std[imode])
+            exponent=ns*area_particle
+            ff=np.zeros_like(exponent)
+            ff[exponent>=1e-5]=1-np.exp(-exponent[exponent>=1e-5])
+            ff[exponent<1e-5]=exponent[exponent<1e-5]
+            
+            ff_fitted=jl.correct_ff(ff,std[imode])
+    #        INP=Nd*ff_fitted
+    
+            INP_BC_ext_min[itemp,:,:,:,:]=INP_BC_ext_min[itemp,:,:,:,:]+Nd[imode,:,:,:,:]*ff_fitted
+    
+    
+    np.save(sav_fol+'INP_BC_ext_min',INP_BC_ext_min)
+            
+    INP_BC_ext_ambient_min=np.zeros((31,64,128,12))
+    modes_vol=volumes_of_modes(s)
+    BC_volfrac=(s.tot_mc_bc_mm_mode[:,:,:,:,:]/rhocomp[2])/modes_vol
+    Nd=s.st_nd[:,:,:,:,:]*BC_volfrac
+    rmean=s.rbardry[:,:,:,:,:]*1e2
+    ns=BC_parametrization_tom(temperatures_monthly)
     for imode in range(7):
-        area_particle=area_lognormal_per_particle(rmean[imode,:,:,:,:],std[imode])
-        exponent=ns*area_particle
-        ff=np.zeros_like(exponent)
-        ff[exponent>=1e-5]=1-np.exp(-exponent[exponent>=1e-5])
-        ff[exponent<1e-5]=exponent[exponent<1e-5]
-        
-        ff_fitted=jl.correct_ff(ff,std[imode])
-#        INP=Nd*ff_fitted
-
-        INP_BC_ext_min[itemp,:,:,:,:]=INP_BC_ext_min[itemp,:,:,:,:]+Nd[imode,:,:,:,:]*ff_fitted
-
-
-
-        
-INP_BC_ext_ambient_min=np.zeros((31,64,128,12))
-modes_vol=volumes_of_modes(s)
-BC_volfrac=(s.tot_mc_bc_mm_mode[:,:,:,:,:]/rhocomp[2])/modes_vol
-Nd=s.st_nd[:,:,:,:,:]*BC_volfrac
-rmean=s.rbardry[:,:,:,:,:]*1e2
-ns=BC_parametrization_tom(temperatures_monthly)
-for imode in range(7):
-    print imode
-    INP_BC_ext_ambient_min[:,:,:,:]=INP_BC_ext_ambient_min[:,:,:,:]+Nd[imode,:,:,:,:]*(1-np.exp(-ns*4*np.pi*rmean[imode,:,:,:,:]**2))
-
-
-INP_BC_ext_murray=np.zeros((38,31,64,128,12))
-modes_vol=volumes_of_modes(s)
-BC_volfrac=(s.tot_mc_bc_mm_mode[:,:,:,:,:]/rhocomp[2])/modes_vol
-Nd=s.st_nd[:,:,:,:,:]*BC_volfrac
-rmean=s.rbardry[:,:,:,:,:]*1e2
-std=s.sigma[:]
-for itemp in range (0,38):
-    print itemp
-    ns=murray(-itemp)
+        print imode
+        INP_BC_ext_ambient_min[:,:,:,:]=INP_BC_ext_ambient_min[:,:,:,:]+Nd[imode,:,:,:,:]*(1-np.exp(-ns*4*np.pi*rmean[imode,:,:,:,:]**2))
+    
+    np.save(sav_fol+'INP_BC_ext_ambient_min',INP_BC_ext_ambient_min)
+    
+    INP_BC_ext_murray=np.zeros((38,31,64,128,12))
+    modes_vol=volumes_of_modes(s)
+    BC_volfrac=(s.tot_mc_bc_mm_mode[:,:,:,:,:]/rhocomp[2])/modes_vol
+    Nd=s.st_nd[:,:,:,:,:]*BC_volfrac
+    rmean=s.rbardry[:,:,:,:,:]*1e2
+    std=s.sigma[:]
+    for itemp in range (0,38):
+        print itemp
+        ns=murray(-itemp)
+        for imode in range(7):
+            area_particle=area_lognormal_per_particle(rmean[imode,:,:,:,:],std[imode])
+            exponent=ns*area_particle
+            ff=np.zeros_like(exponent)
+            ff[exponent>=1e-5]=1-np.exp(-exponent[exponent>=1e-5])
+            ff[exponent<1e-5]=exponent[exponent<1e-5]
+            
+            ff_fitted=jl.correct_ff(ff,std[imode])
+    #        INP=Nd*ff_fitted
+    
+            INP_BC_ext_murray[itemp,:,:,:,:]=INP_BC_ext_murray[itemp,:,:,:,:]+Nd[imode,:,:,:,:]*ff_fitted
+    
+    np.save(sav_fol+'INP_BC_ext_murray',INP_BC_ext_murray)
+    #INP_BC_ext_murray_old=np.copy(INP_BC_ext_murray)
+    
+    
+    INP_BC_ext_ambient_murray=np.zeros((31,64,128,12))
+    modes_vol=volumes_of_modes(s)
+    BC_volfrac=(s.tot_mc_bc_mm_mode[:,:,:,:,:]/rhocomp[2])/modes_vol
+    Nd=s.st_nd[:,:,:,:,:]*BC_volfrac
+    rmean=s.rbardry[:,:,:,:,:]*1e2
+    ns=murray(temperatures_monthly)
     for imode in range(7):
-        area_particle=area_lognormal_per_particle(rmean[imode,:,:,:,:],std[imode])
-        exponent=ns*area_particle
-        ff=np.zeros_like(exponent)
-        ff[exponent>=1e-5]=1-np.exp(-exponent[exponent>=1e-5])
-        ff[exponent<1e-5]=exponent[exponent<1e-5]
-        
-        ff_fitted=jl.correct_ff(ff,std[imode])
-#        INP=Nd*ff_fitted
-
-        INP_BC_ext_murray[itemp,:,:,:,:]=INP_BC_ext_murray[itemp,:,:,:,:]+Nd[imode,:,:,:,:]*ff_fitted
-
-#INP_BC_ext_murray_old=np.copy(INP_BC_ext_murray)
-
-
-INP_BC_ext_ambient_murray=np.zeros((31,64,128,12))
-modes_vol=volumes_of_modes(s)
-BC_volfrac=(s.tot_mc_bc_mm_mode[:,:,:,:,:]/rhocomp[2])/modes_vol
-Nd=s.st_nd[:,:,:,:,:]*BC_volfrac
-rmean=s.rbardry[:,:,:,:,:]*1e2
-ns=murray(temperatures_monthly)
-for imode in range(7):
-    print imode
-    INP_BC_ext_ambient_murray[:,:,:,:]=INP_BC_ext_ambient_murray[:,:,:,:]+Nd[imode,:,:,:,:]*(1-np.exp(-ns*4*np.pi*rmean[imode,:,:,:,:]**2))
-
-
-INP_feld_ext=np.zeros((38,31,64,128,12))
-modes_vol=volumes_of_modes(s)
-feld_volfrac=(s.tot_mc_feldspar_mm_mode[:,:,:,:,:]/rhocomp[6])/modes_vol
-Nd=s.st_nd[:,:,:,:,:]*feld_volfrac
-rmean=s.rbardry[:,:,:,:,:]*1e2
-for itemp in range (0,38):
-    print itemp
-    ns=feld_parametrization(-itemp+273.15)
+        print imode
+        INP_BC_ext_ambient_murray[:,:,:,:]=INP_BC_ext_ambient_murray[:,:,:,:]+Nd[imode,:,:,:,:]*(1-np.exp(-ns*4*np.pi*rmean[imode,:,:,:,:]**2))
+    
+    np.save(sav_fol+'INP_BC_ext_ambient_murray',INP_BC_ext_ambient_murray)
+    
+    INP_feld_ext=np.zeros((38,31,64,128,12))
+    modes_vol=volumes_of_modes(s)
+    feld_volfrac=(s.tot_mc_feldspar_mm_mode[:,:,:,:,:]/rhocomp[6])/modes_vol
+    Nd=s.st_nd[:,:,:,:,:]*feld_volfrac
+    rmean=s.rbardry[:,:,:,:,:]*1e2
+    for itemp in range (0,38):
+        print itemp
+        ns=feld_parametrization(-itemp+273.15)
+        for imode in range(7):
+            INP_feld_ext[itemp,:,:,:,:]=INP_feld_ext[itemp,:,:,:,:]+Nd[imode,:,:,:,:]*(1-np.exp(-ns*4*np.pi*rmean[imode,:,:,:,:]**2))
+            
+    np.save(sav_fol+'INP_feld_ext',INP_feld_ext)
+    
+    INP_feld_ext_ambient=np.zeros((31,64,128,12))
+    modes_vol=volumes_of_modes(s)
+    feld_volfrac=(s.tot_mc_feldspar_mm_mode[:,:,:,:,:]/rhocomp[6])/modes_vol
+    Nd=s.st_nd[:,:,:,:,:]*feld_volfrac
+    rmean=s.rbardry[:,:,:,:,:]*1e2
+    ns=feld_parametrization(temperatures_monthly+273.15)
     for imode in range(7):
-        INP_feld_ext[itemp,:,:,:,:]=INP_feld_ext[itemp,:,:,:,:]+Nd[imode,:,:,:,:]*(1-np.exp(-ns*4*np.pi*rmean[imode,:,:,:,:]**2))
-        
-
-INP_feld_ext_ambient=np.zeros((31,64,128,12))
-modes_vol=volumes_of_modes(s)
-feld_volfrac=(s.tot_mc_feldspar_mm_mode[:,:,:,:,:]/rhocomp[6])/modes_vol
-Nd=s.st_nd[:,:,:,:,:]*feld_volfrac
-rmean=s.rbardry[:,:,:,:,:]*1e2
-ns=feld_parametrization(temperatures_monthly+273.15)
-for imode in range(7):
-    print imode
-    INP_feld_ext_ambient[:,:,:,:]=INP_feld_ext_ambient[:,:,:,:]+Nd[imode,:,:,:,:]*(1-np.exp(-ns*4*np.pi*rmean[imode,:,:,:,:]**2))
-
+        print imode
+        INP_feld_ext_ambient[:,:,:,:]=INP_feld_ext_ambient[:,:,:,:]+Nd[imode,:,:,:,:]*(1-np.exp(-ns*4*np.pi*rmean[imode,:,:,:,:]**2))
+    
+    np.save(sav_fol+'INP_feld_ext_ambient',INP_feld_ext_ambient)
 #%%
+INP_feld_ext=np.load(sav_fol+'INP_feld_ext'+'.npy', mmap_mode='r')
 INP_feld_ext_m3=INP_feld_ext*1e6
+INP_feld_ext_ambient=np.load(sav_fol+'INP_feld_ext_ambient'+'.npy', mmap_mode='r')
 INP_feld_ext_ambient_m3=INP_feld_ext_ambient*1e6
+INP_BC_ext_ambient_min=np.load(sav_fol+'INP_BC_ext_ambient_min'+'.npy', mmap_mode='r')
 INP_BC_ext_ambient_min_m3=INP_BC_ext_ambient_min*1e6
+INP_BC_ext_min=np.load(sav_fol+'INP_BC_ext_min'+'.npy', mmap_mode='r')
 INP_BC_ext_min_m3=INP_BC_ext_min*1e6
+INP_BC_ext_ambient_murray=np.load(sav_fol+'INP_BC_ext_ambient_murray'+'.npy', mmap_mode='r')
 INP_BC_ext_ambient_murray_m3=INP_BC_ext_ambient_murray*1e6
+INP_BC_ext_murray=np.load(sav_fol+'INP_BC_ext_murray'+'.npy', mmap_mode='r')
 INP_BC_ext_murray_m3=INP_BC_ext_murray*1e6
 #%%
 #INP_feld_ext
 
-INP_feldspar_alltemps_m3=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e6#m3
-INP_marine_alltemps_m3=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY/INP_marine_alltemps.npy')#m3
+INP_feldspar_alltemps_m3=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy', mmap_mode='r')*1e6#m3
+INP_marine_alltemps_m3=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY/INP_marine_alltemps.npy', mmap_mode='r')#m3
 INP_total=INP_marine_alltemps_m3+INP_feldspar_alltemps_m3
 
 #%%
@@ -251,6 +266,28 @@ def calculate_BC(factor,T):
     return INP_BC_ext_threshold,INP_BC_ext_ambient_threshold
 #%%
 INP_total_cm=INP_total*1e-6
+lats=jl.lat
+#a=np.insert(lats,0,90)
+lats_border=[]
+#lats_extreme=np.insert(a,len(a),-90)
+for i in range(len(lats)+1):
+    if i==0:
+        lats_border.append(90)
+    elif i==len(lats):
+        lats_border.append(-90)
+    else:
+        lats_border.append((lats[i-1]+lats[i])/2.)
+
+surface_area_fraction=np.zeros((64,128))
+for i in range(len(lats)):
+    lat1=lats_border[i]
+    lat2=lats_border[i+1]
+    surface_area_fraction[i,:]=np.sin(lat1*np.pi/2./90)-np.sin(lat2*np.pi/2./90)
+
+
+
+surface_area_fraction=surface_area_fraction/surface_area_fraction.sum()
+
 
 
 def percentage_gridboxes(T,ns):
@@ -274,9 +311,16 @@ def percentage_gridboxes(T,ns):
     ratio=INP_BC_ext_threshold.mean(axis=-1)/INP_total_cm[-T,30,].mean(axis=-1)
     print ratio.shape
     fraction=np.array([ratio>1]).sum()/float(ratio.size)
+    fraction=np.array([ratio>1])*surface_area_fraction
+    fraction=fraction.sum()
     return fraction
 
-a=percentage_gridboxes(-30,1e4)
+
+
+plt.plot(surface_area_fraction[:len(lats)/2,0],ls='-.')
+plt.plot(surface_area_fraction[len(lats)/2:,0][::-1],ls='--')
+
+a=percentage_gridboxes(-15,1e3)
 print a
 
 #%%
@@ -337,6 +381,7 @@ plt.figure()
 yin=jl.read_INP_data('/nfs/a107/eejvt/INP_DATA/data_by_campaing/Yin.dat',header=0)
 bigg=jl.read_INP_data('/nfs/a107/eejvt/INP_DATA/bigg73.dat',header=0)
 print yin[:,1]
+
 #jl.fitandplot_comparison(INP_BC_ext_min_m3.mean(axis=-1)*1e-6,yin)
 #jl.fitandplot_comparison(INP_BC_ext_min_m3.mean(axis=-1)*1e-6,bigg)
 #jl.fitandplot_comparison(INP_BC_ext_murray_m3.mean(axis=-1)*1e-6,bigg)
@@ -358,8 +403,9 @@ simulated_points_murray=jl.obtain_points_from_data(INP_BC_ext_murray_m3.mean(axi
 #simulated_points_threshold_b=jl.obtain_points_from_data(INP_BC_ext_threshold_m3.mean(axis=-1)*1e-6,bigg)
 marker_size=20
 #plt.scatter(yin[:,2],simulated_points_threshold[:,0],c='blue',marker='o',s=marker_size)
-plt.scatter(yin[:,2],simulated_points_min[:,0],c='b',marker='o',s=marker_size,label='This work')
-plt.scatter(yin[:,2],simulated_points_murray[:,0],c='r',marker='o',s=marker_size,label='Murray2012')
+plt.figure('yin')
+plt.scatter(yin[:,2],simulated_points_min[:,0],c='b',marker='o',s=marker_size,label='NEW-UPL')
+plt.scatter(yin[:,2],simulated_points_murray[:,0],c='r',marker='o',s=marker_size,label='OLD')
 
 #
 #if errors:
@@ -372,14 +418,21 @@ plt.scatter(yin[:,2],simulated_points_murray[:,0],c='r',marker='o',s=marker_size
 #
 
 #plt.scatter(bigg[:,2],simulated_points_threshold_b[:,0],c='blue',marker='^',s=marker_size)
-plt.scatter(bigg[:,2],simulated_points_min_b[:,0],c='b',marker='^',s=marker_size)
-plt.scatter(bigg[:,2],simulated_points_murray_b[:,0],c='r',marker='^',s=marker_size)
-plt.scatter([],[],marker='^', label='bigg73')
-plt.scatter([],[],marker='o', label='Yin')
+plt.title('(b) Yin et al (2012)')
+#plt.scatter([],[],marker='o', label='Yin')
 plt.yscale('log')
 plt.xscale('log')
-min_val=1e-10
-max_val=1e3
+
+plt.figure('bigg')
+plt.scatter(bigg[:,2],simulated_points_min_b[:,0],c='b',marker='^',s=marker_size,label='NEW-UPL')
+plt.scatter(bigg[:,2],simulated_points_murray_b[:,0],c='r',marker='^',s=marker_size,label='OLD')
+#plt.scatter([],[],marker='^', label='bigg73')
+plt.title('(c) Bigg et al (1973)')
+
+plt.yscale('log')
+plt.xscale('log')
+min_val=1e-9
+max_val=1e-1
 
 minx=np.min(min_val)
 maxx=np.max(max_val)
@@ -388,7 +441,9 @@ maxy=np.max(max_val)
 min_plot=min_val
 max_plot=max_val
 
-x=np.linspace(0.1*min_plot,10*max_plot,100)
+x=np.linspace(0.001*min_plot,1000000*max_plot,100)
+
+plt.figure('bigg')
 plt.plot(x,x,'k-')
 plt.plot(x,10*x,'k--')
 plt.plot(x,10**1.5*x,'k-.')
@@ -399,8 +454,32 @@ plt.xlim(minx*0.1,maxx*10)
 plt.legend(loc='best')
 plt.xlabel('Observed INP cm-3')
 plt.ylabel('Simulated INP cm-3')
-plt.savefig(jl.bc_folder+'one_to_one.png')
 plt.show()
+plt.savefig(jl.bc_folder+'one_to_one_bigg.png')
+plt.figure('yin')
+min_val=1e-6
+max_val=1e3
+
+minx=np.min(min_val)
+maxx=np.max(max_val)
+miny=np.min(min_val)
+maxy=np.max(max_val)
+min_plot=min_val
+max_plot=max_val
+
+
+plt.plot(x,x,'k-')
+plt.plot(x,10*x,'k--')
+plt.plot(x,10**1.5*x,'k-.')
+plt.plot(x,0.1*x,'k--')
+plt.plot(x,10**(-1.5)*x,'k-.')
+plt.ylim(miny*0.1,maxy*10)
+plt.xlim(minx*0.1,maxx*10)
+plt.legend(loc='best')
+plt.xlabel('Observed INP cm-3')
+plt.ylabel('Simulated INP cm-3')
+plt.show()
+plt.savefig(jl.bc_folder+'one_to_one_yin.png')
 levels=(1e-9*np.logspace(-3,8,12)).tolist()
 
 #jl.plot(INP_BC_ext_min_m3.mean(axis=-1)[20,30,:,:]*1e-6,clevs=levels)
@@ -414,12 +493,15 @@ print 'percentage of gridboxes:',np.sum(ratio[20,30,:,:]>1)/np.float(ratio[20,30
 
 
 #%%
-levels=(1e-3*np.logspace(-3,8,12)).tolist()
+levels=(1e-2*np.logspace(-3,8,12)).tolist()
 contour_levels=np.logspace(-1,2,4).tolist()
 contour_levels=np.logspace(0,3,4).tolist()
 print levels
 print contour_levels
 cmap=plt.cm.CMRmap_r
+import matplotlib
+matplotlib.rcParams.update({'font.size': 25})
+
 #%%
 
 jl.plot(s.tot_mc_feldspar_mm_mode[:,:,:,:,:].sum(axis=0).mean(axis=-1)[30,:,:],
@@ -428,15 +510,15 @@ jl.plot(s.tot_mc_feldspar_mm_mode[:,:,:,:,:].sum(axis=0).mean(axis=-1)[30,:,:],
 
 #%%
 #jl.plot(INP_BC_ext_m3[30,15,:,:,:].mean(axis=-1)*1e-6,title='INP BC 600hpa T=-20C', cblabel='$m^{-3}$',cmap=plt.cm.OrRd)
-fn=jl.bc_folder+'Surface_20_min'
-jl.plot2(INP_BC_ext_min_m3[20,30,:,:,:].mean(axis=-1)*1e-3,clevs=levels,
-        title='INP BC surface min T=-20C', cblabel='$L-1$',cmap=cmap,colorbar_format_sci=1,file_name=fn,saving_format='png',
-        contour=INP_total[20,30,:,:,:].mean(axis=-1)*1e-3,contourlevs=contour_levels,line_color='k')
+fn=jl.bc_folder+'Surface_25_min'
+jl.plot2(INP_BC_ext_min_m3[25,30,:,:,:].mean(axis=-1)*1e-3,clevs=levels,
+        title='(a)INP BC surface NEW-UPL T=-25C', cblabel='$L-1$',cmap=cmap,colorbar_format_sci=1,file_name=fn,saving_format='png',
+        contour=INP_total[25,30,:,:,:].mean(axis=-1)*1e-3,contourlevs=contour_levels,line_color='k')
 #%%
-fn=jl.bc_folder+'Surface_20_murray'
-jl.plot2(INP_BC_ext_murray_m3[20,30,:,:,:].mean(axis=-1)*1e-3,clevs=levels,
-        title='INP BC surface high T=-20C', cblabel='$L-1$',cmap=cmap,colorbar_format_sci=1,file_name=fn,saving_format='png',
-        contour=INP_feld_ext_m3[20,30,:,:,:].mean(axis=-1)*1e-3,contourlevs=contour_levels,line_color='w')
+fn=jl.bc_folder+'Surface_25_murray'
+jl.plot2(INP_BC_ext_murray_m3[25,30,:,:,:].mean(axis=-1)*1e-3,clevs=levels,
+        title='(b) INP BC surface OLD T=-25C', cblabel='$L-1$',cmap=cmap,colorbar_format_sci=1,file_name=fn,saving_format='png',
+        contour=INP_total[25,30,:,:,:].mean(axis=-1)*1e-3,contourlevs=contour_levels,line_color='w')
 #%%
 fn=jl.bc_folder+'Surface_20_threshold'
 jl.plot2(INP_BC_ext_threshold_m3[20,30,:,:,:].mean(axis=-1)*1e-3,clevs=levels,
@@ -530,7 +612,7 @@ plt.figure()
 feldspar=INP_feld_ext_ambient*1e6
 BC=INP_BC_ext_ambient_murray*1e6
 BC=INP_BC_ext_ambient_min*1e6
-BC=INP_BC_ext_ambient_threshold*1e6
+#BC=INP_BC_ext_ambient_threshold*1e6
 
 def plot_ratio_ambient(BC,feld,name='none'):
     plt.figure()
@@ -556,11 +638,11 @@ def plot_ratio_ambient(BC,feld,name='none'):
     plt.savefig(jl.bc_folder+name+'.png')
 
 #ax=plt.subplot(1,3,1)
-plot_ratio_ambient(INP_BC_ext_ambient_min*1e6,feldspar,name='min')#,ax)
+plot_ratio_ambient(INP_BC_ext_ambient_min*1e6,feldspar,name='(c) NEW-UPL')#,ax)
 #bx=plt.subplot(1,3,2)
-plot_ratio_ambient(INP_BC_ext_ambient_threshold*1e6,feldspar,name='Threshold')#,bx)
+#plot_ratio_ambient(INP_BC_ext_ambient_threshold*1e6,feldspar,name='Threshold')#,bx)
 #cx=plt.subplot(1,3,3)
-plot_ratio_ambient(INP_BC_ext_ambient_murray*1e6,feldspar,name='High')#,cx)
+plot_ratio_ambient(INP_BC_ext_ambient_murray*1e6,feldspar,name='(d) OLD')#,cx)
 
 '''
 cx=plt.subplot(1,3,3)
@@ -607,40 +689,3 @@ plt.show()
 for _ in range(1000):
     plt.close()
 #%%
-
-INP_marine_alltemps=np.load('/nfs/a201/eejvt//MARINE_PARAMETERIZATION/FOURTH_TRY/INP_marine_alltemps.npy')*1e-3#l
-INP_feldspar_alltemps=np.load('/nfs/a107/eejvt/JB_TRAINING/INP_feld_ext_alltemps.npy')*1e3#l
-
-
-
-column_feldspar=INP_feldspar_alltemps[:,:,jl.cape_verde_latlon_index[0],jl.cape_verde_latlon_index[1],7]
-column_marine=INP_marine_alltemps[:,:,jl.cape_verde_latlon_index[0],jl.cape_verde_latlon_index[1],7]
-temps=np.arange(-37,1,1)
-temps=temps[::-1]
-#%%
-plt.figure()
-for i in range(len(column_marine[0,:])):
-    if i <22:
-        continue
-    plt.plot(temps,column_marine[:,i],'g--',label='Marine organics')
-    plt.plot(temps,column_feldspar[:,i],'r--',label='K-feldspar')
-plt.yscale('log')
-plt.ylabel('$[INP]/L$')
-#%%
-level=20
-plt.plot(temps,column_marine[:,level],'g--')
-plt.plot(temps,column_feldspar[:,level],'r--')
-plt.yscale('log')
-table=np.zeros((39,32))
-ps=[(i+1)*1/31.*1000 for i in range(31)]
-table[1:,0]=temps
-table[0,1:]=ps
-table[1:,1:]=column_feldspar
-np.savetxt('marine_cape_verde.csv',table,delimiter=',')
-np.savetxt('feldspar_cape_verde.csv',table,delimiter=',')
-for i in range(len(column_marine[0,:])):
-
-
-#plt.plot(ps)
-#plt.plot(jl.pressure)
-#'''

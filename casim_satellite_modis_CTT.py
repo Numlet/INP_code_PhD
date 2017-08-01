@@ -33,6 +33,7 @@ import scipy
 sys.path.append('/nfs/see-fs-01_users/eejvt/PYTHON_CODE/Satellite_Comparison')
 import satellite_comparison_suite as stc
 from collections import OrderedDict
+import netCDF4
 
 font = {'family' : 'normal',
         'weight' : 'normal',
@@ -79,10 +80,13 @@ SDS_NAME  = 'Cloud_Water_Path'
 SDS_NAME  = 'Cloud_Water_Path_16'
 SDS_NAME  = 'Cloud_Top_Height'
 SDS_NAME  = 'Cloud_Top_Temperature'
+SDS_NAME  = 'Cloud_Fraction'
+SDS_NAME  = 'Cloud_Phase_Infrared'
+
 hdf  =SD.SD(path+'modis/'+'MYD06_L2.A2014343.1325.006.2014344210847.hdf')
 #print hdf.datasets().keys()
 for k in hdf.datasets().keys():
-    if 'Tem' in k:
+    if '' in k:
         print k
 
 sds = hdf.select(SDS_NAME)
@@ -103,6 +107,39 @@ sat_lat=latitude.flatten()
 sat_data=data.flatten()
 #for att in sds.attributes():
 #    print att
+plt.imshow(data)
+plt.colorbar()
+plt.show()
+#%%
+sim_path='/nfs/a201/eejvt/CASIM/SO_KALLI/'
+sub_folder='L1/'
+sub_folder='All_time_steps/'
+code='top_temp'
+code='m01s01i208'
+cloud_top= iris.load(ukl.Obtain_name(sim_path+'TRY2/ALL_ICE_PROC/'+sub_folder,code))[0]
+cloud_top= iris.load(ukl.Obtain_name(sim_path+'TRY2/LARGE_DOMAIN/'+sub_folder,code))[0]
+mb=netCDF4.Dataset(path+'modis/'+'MYD06_L2.A2014343.1325.006.2014344210847.nc','r') 
+mb.variables['Cloud_Mask_1km']
+#plt.imshow(mb.variables['Cloud_Fraction'])
+sat_dat=mb.variables['Cloud_Fraction'][:,].flatten()
+sat_dat=mb.variables['Cloud_Mask_1km'][:,].flatten()
+coord=np.zeros([len(sat_lon),2])
+coord[:,0]=sat_lon
+coord[:,1]=sat_lat
+cm=plt.cm.RdBu_r
+model_lons,model_lats=stc.unrotated_grid(cloud_top)
+X,Y=np.meshgrid(model_lons, model_lats)
+reload(stc)
+grid_z1 = sc.interpolate.griddata(coord, sat_data, (X,Y), method='linear')
+grid_z1[np.isnan(grid_z1)]=0
+plt.figure()
+plt.subplot(121)
+plt.imshow(grid_z1)
+#plt.xlim(0,600)
+plt.subplot(122)
+plt.imshow(cloud_top.data[12,])
+plt.show()
+
 #%%
 
 sim_path='/nfs/a201/eejvt/CASIM/SO_KALLI/'
@@ -137,7 +174,13 @@ X,Y=np.meshgrid(model_lons, model_lats)
 reload(stc)
 grid_z1 = sc.interpolate.griddata(coord, sat_data, (X,Y), method='linear')
 grid_z1[np.isnan(grid_z1)]=0
-
+plt.figure()
+plt.subplot(121)
+plt.imshow(grid_z1)
+#plt.xlim(0,600)
+plt.subplot(122)
+plt.imshow(cloud_top.data[12,])
+plt.show()
 #%%
 
 

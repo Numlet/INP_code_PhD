@@ -65,6 +65,8 @@ x0=jl.read_data('PATX0')
 x2=jl.read_data('PATX2')
 x4=jl.read_data('PATX4')
 
+
+
 #%%
 ds_x1=x1.tot_mc_feldspar_mm_mode[:,:,:,:,:].sum(axis=0)+x1.tot_mc_dust_mm_mode[:,:,:,:,:].sum(axis=0)
 ds_x0=x0.tot_mc_feldspar_mm_mode[:,:,:,:,:].sum(axis=0)+x0.tot_mc_dust_mm_mode[:,:,:,:,:].sum(axis=0)
@@ -76,6 +78,21 @@ lon=-57.45
 ilat=jl.find_nearest_vector_index(jl.lat,lat)
 ilon=jl.find_nearest_vector_index(jl.lon180,lon)
 
+levels=np.logspace(-3,2,10).tolist()
+jl.antartic_plot(ds_x1[30,:,:,:].mean(axis=-1),title='Surface concentrations dust x1',clevs=levels)
+plt.savefig(jl.home_dir+'PATAGONIAN/dust_x1_surface.png')
+
+jl.antartic_plot(ds_x1[20,:,:,:].mean(axis=-1),title='600hpa concentrations dust x1',clevs=levels)
+plt.savefig(jl.home_dir+'PATAGONIAN/dust_x1_600hpa.png')
+
+jl.antartic_plot(ds_x4[30,:,:,:].mean(axis=-1),title='Surface concentrations dust x4',clevs=levels)
+plt.savefig(jl.home_dir+'PATAGONIAN/dust_x4_surface.png')
+
+jl.antartic_plot(ds_x4[20,:,:,:].mean(axis=-1),title='600hpa concentrations dust x4',clevs=levels)
+plt.savefig(jl.home_dir+'PATAGONIAN/dust_x4_600hpa.png')
+
+
+#%%
 
 plt.figure()
 plt.plot(ds_x1[30,ilat,ilon,:],label='x1',c='b')

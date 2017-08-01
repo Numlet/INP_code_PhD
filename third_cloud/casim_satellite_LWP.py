@@ -119,7 +119,7 @@ cube_global = cube_global.regrid(cube_DM10, iris.analysis.Linear())
 times=dataset.variables['time'][0,]
 #times[times==missing]=0
 LWP=dataset.variables['cloud'][0,]
-#LWP[LWP==missing]=np.nan
+LWP[LWP==missing]=np.nan
 LWP[times<15]=np.nan
 LWP[times>18]=np.nan
 
@@ -162,7 +162,7 @@ plt.imshow(grid_z1)
 it=15
 runs_dict=OrderedDict()
 runs_dict['Satellite']=grid_z1
-runs_dict['GLOBAL']=cube_global[it].data
+#runs_dict['GLOBAL']=cube_global[it].data
 runs_dict['DM10']=cube_DM10[it].data
 runs_dict['GLO_HIGH']=cube_GLO_HIGH[it].data
 #runs_dict['MEYERS (CS)']=cube_csbm[13].data
@@ -177,13 +177,24 @@ runs_dict['GLO_MIN']=cube_GLO_MIN[it].data
 runs_dict['GP_HAM_DMDUST']=cube_GP_HAM_DMDUST[it].data
 runs_dict['MEYERS']=cube_MEYERS[it].data
          
+         
+
+for run in runs_dict:
+    runs_dict[run]=stc.coarse_grain(stc.clean_cube(runs_dict[run]))
+#    runs_dict[run]=stc.clean_cube(runs_dict[run])
+model_lons,model_lats=stc.unrotated_grid(stc.clean_cube(cube_DM10))
+X,Y=np.meshgrid(model_lons, model_lats)
+X=stc.coarse_grain(X)
+Y=stc.coarse_grain(Y)
+
+
 levels=np.arange(0.00,0.5,0.05).tolist()
 same_bins=np.linspace(0.00,0.5,100)
 
 levels=np.linspace(runs_dict['Satellite'].min(),runs_dict['Satellite'].max(),15)
-stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='LWP mm')
+stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='3rd LWP mm')
 stc.plot_PDF(runs_dict,same_bins,
-             variable_name='LWP mm')
+             variable_name='3rd LWP mm')
 
 
 
@@ -251,17 +262,17 @@ cb.set_label('$kg/m^{-3}$')
 
 
 #%%
-for _ in range(100):
-    plt.close()
-
-
-
-
-
-
-
-
-
+#for _ in range(100):
+#    plt.close()
+#
+#
+#
+#
+#
+#
+#
+#
+#
 
 
 

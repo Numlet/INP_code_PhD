@@ -173,10 +173,19 @@ else:
     #grid_z2 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='cubic')
     #grid_z2[grid_z2<0]=0
     #grid_z2[grid_z2==np.nan]=0
+    
+    for run in runs_dict:
+        runs_dict[run]=stc.coarse_grain(stc.clean_cube(runs_dict[run]),factor=10)
+    #    runs_dict[run]=stc.clean_cube(runs_dict[run])
+    model_lons,model_lats=stc.unrotated_grid(stc.clean_cube(cube_DM10))
+    X,Y=np.meshgrid(model_lons, model_lats)
+    X=stc.coarse_grain(X,factor=10)
+    Y=stc.coarse_grain(Y,factor=10)
+
     levels=np.linspace(0,runs_dict['Satellite'].max(),15)#runs_dict['Satellite'].min()
     levels=np.linspace(100,700,15)#runs_dict['Satellite'].min()
     levels_bin=np.linspace(0,runs_dict['Satellite'].max(),30)#runs_dict['Satellite'].min()
-    levels_bin=np.linspace(100,700,50)#runs_dict['Satellite'].min()
+    levels_bin=np.linspace(100,700,15)#runs_dict['Satellite'].min()
     stc.plot_map(runs_dict,levels,lat=X,lon=Y,variable_name='(THIRD) TOA shortwave Wm-2')
     stc.plot_PDF(runs_dict,levels_bin,variable_name='(THIRD) TOA shortwave Wm-2')
 

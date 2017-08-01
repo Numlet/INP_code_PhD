@@ -48,7 +48,7 @@ file1='/nfs/a107/ear3clsr/GASSP/Processed_data/SEAC4RS/HDSP2_mrg60-dc8_merge_201
 file1='/nfs/a107/ear3clsr/GASSP/Processed_data/COPE/SP2_COPE_B792_FAAM_MAN_20130803_V1.nc'
 
 
-file1='/nfs/a107/ear3clsr/GASSP/Processed_data/ACCACIA/SP2_ACCACIA_B768_FAAM_MAN_20130403_V1.nc'
+file1='/nfs/a107/ear3clsr/GASSP/Level_2/ACCACIA/SP2_ACCACIA_B768_FAAM_MAN_20130403_V1.nc'
 file1='/nfs/a107/ear3clsr/GASSP/Processed_data/HIPPO/SP2_HIPPO_M5_9_NOAA_20110829_V1.nc' 
 file1='/nfs/a107/ear3clsr/GASSP/Processed_data/ARCPAC2008/SP2_mrg60_NP3_20080421_R6.ict.nc'
 file1='/nfs/a107/ear3clsr/GASSP/Processed_data/ACCACIA/SP2_ACCACIA_B762_FAAM_MAN_20130323_V1.nc'
@@ -74,6 +74,7 @@ s={}
 s=readsav('/nfs/a107/eejvt/JB_TRAINING/WITH_ICE_SCAV2/tot_mc_bc_mm_chained_GLOMAP_mode_v7_MS8_OldDMS_ACCMIP_30traer_withICE_SCAV_2001.sav',idict=s)
 #%%
 file_list_file='/nfs/see-fs-02_users/libclsr/GASSP/source_code/working_code/Search_results_BCdata_for_Jesus.txt'
+file_list_file='/nfs/see-fs-02_users/libclsr/GASSP/source_code/working_code/search_lists/Search_results_BCdata_for_Jesus.txt'
 with open(file_list_file) as f:
     file_list = f.readlines()
     
@@ -90,7 +91,7 @@ class time_params():
 
 
 class campaign():
-    def __init__(self, name,lat_name,lon_name,pressure_name,time=0,file_list_path='/nfs/see-fs-02_users/libclsr/GASSP/source_code/working_code/Search_results_BCdata_for_Jesus.txt'):
+    def __init__(self, name,lat_name,lon_name,pressure_name,time=0,file_list_path='/nfs/see-fs-02_users/libclsr/GASSP/source_code/working_code/search_lists/Search_results_BCdata_for_Jesus.txt'):
         self.name = name
         with open(file_list_path) as f:
             file_list = f.readlines()
@@ -312,6 +313,9 @@ BC_volfrac=(s.tot_mc_bc_mm_mode[:,:,:,:,:]/rhocomp[2])/modes_vol
 rf=(BC_volfrac*s.rbardry**3)**(1/3.)
 std=s.sigma
 PDF_fraction=np.zeros(rf.shape)
+PDF_fraction=np.ones(rf.shape)
+#%%
+
 for i in range(len(rf[:,0,0,0,0])):
     print i
     if rf[i,0,0,0,0]==0:
@@ -340,13 +344,14 @@ model_data7.values=readsav('/nfs/a107/eejvt/JB_TRAINING/WITH_ICE_SCAV2/tot_mc_bc
 model_data7.values=(readsav('/nfs/a107/eejvt/JB_TRAINING/WITH_ICE_SCAV2/tot_mc_bc_mm_mode_chained_GLOMAP_mode_v7_MS8_OldDMS_ACCMIP_30traer_withICE_SCAV_2001.sav').tot_mc_bc_mm_mode*PDF_fraction).sum(axis=0)
 model_data7.press=readsav('/nfs/a107/eejvt/JB_TRAINING/WITH_ICE_SCAV2/GLOMAP_mode_pressure_mp_chained_GLOMAP_mode_v7_MS8_OldDMS_ACCMIP_30traer_withICE_SCAV_2001.sav').pl_m*1e-2
 #%%
+import matplotlib.patches as patches
 model_data=model_data10
 model_data=model_data7
 import random
 r = lambda: random.randint(0,255)
-file_name='/nfs/a107/ear3clsr/GASSP/Processed_data/ACCACIA/SP2_ACCACIA_B768_FAAM_MAN_20130403_V1.nc'
+#file_name='/nfs/a107/ear3clsr/GASSP/Processed_data/ACCACIA/SP2_ACCACIA_B768_FAAM_MAN_20130403_V1.nc'
 fig=plt.figure(2,figsize=(15,15))
-file_name='/nfs/a107/ear3clsr/GASSP/Processed_data/CALNEX/SP2_mrg60_NP3_20100521_R0.ict.nc'
+#file_name='/nfs/a107/ear3clsr/GASSP/Processed_data/CALNEX/SP2_mrg60_NP3_20100521_R0.ict.nc'
 all_observed_values=np.array([])
 all_modelled_values=np.array([])
 all_pressures=np.array([])
@@ -468,7 +473,8 @@ for camp in campaign_dict.itervalues():
 
         all_pressures=np.concatenate((all_pressures,np.array(camp_data.press)))
         thiscamp_pressures=np.concatenate((thiscamp_pressures,np.array(camp_data.press)))
-        
+    if len(thiscamp_modelled_values)==0:
+        continue
     rmse=jl.RMS_err(thiscamp_observed_values,thiscamp_modelled_values)
     nmb=jl.NMB(thiscamp_observed_values,thiscamp_modelled_values)
     r=np.corrcoef(thiscamp_observed_values,thiscamp_modelled_values)[0,1]
@@ -495,27 +501,43 @@ for camp in campaign_dict.itervalues():
     thiscamp_modelled_values=np.array([])
     thiscamp_pressures=np.array([])
     plt.figure(2)
-    plt.scatter(comp_data.observed,comp_data.modelled,label=comp_data.legend,c=camp.color,edgecolors='none')
+    points=len(comp_data.observed[0])
+    mean_obs=list(np.sort(comp_data.observed[0]))[int(points*0.5)]
+    mean_model=list(np.sort(comp_data.modelled[0]))[int(points*0.5)]
+    low_obs=list(np.sort(comp_data.observed[0]))[int(points*0.025)]
+    high_obs=list(np.sort(comp_data.observed)[0])[int(points*0.975)]
+    low_model=list(np.sort(comp_data.modelled[0]))[int(points*0.025)]
+    high_model=list(np.sort(comp_data.modelled)[0])[int(points*0.975)]
+    print low_obs,mean_obs,high_obs    
+    mean_model=np.mean(comp_data.modelled)
+    plt.errorbar([mean_obs], [mean_model], yerr=[[mean_model-low_model],[high_model-mean_model]],xerr=[[mean_obs-low_obs], [high_obs-mean_obs]], elinewidth=5,markersize=20,c=camp.color,fmt='o',markeredgewidth=0.0,label=comp_data.legend)
+#    plt.scatter(comp_data.observed,comp_data.modelled,label=comp_data.legend,c=camp.color,edgecolors='none')
+#    break
+#    rect = patches.Rectangle((50,100),40,30,linewidth=1,edgecolor='r',facecolor='none')
 rmse=jl.RMS_err(all_observed_values,all_modelled_values)
 nmb=jl.NMB(all_observed_values,all_modelled_values)
 r=np.corrcoef(all_observed_values,all_modelled_values)[0,1]
-plt.ylim(1e-4,1e1)
-plt.xlim(1e-4,1e1)
+plt.ylim(1e-5,1e1)
+plt.xlim(1e-5,1e1)
 x=np.logspace(-10,10,100)
 plt.plot(x,x,'k-')
-plt.ylabel('Modelled')
-plt.xlabel('Observed')
+plt.ylabel('Modelled $\mu g/m^{-3}$')
+plt.xlabel('Observed $\mu g/m^{-3}$')
 plt.plot(x,x*10,'k--')
 plt.plot(x,x/10,'k--')
 plt.xscale('log')
 plt.yscale('log')
 plt.legend(loc='best')
-plt.title('R=%1.3f RMSE=%1.3f NMB=%1.3f'%(r,rmse,nmb))
+#plt.title('R=%1.3f RMSE=%1.3f NMB=%1.3f'%(r,rmse,nmb))
 plt.savefig('/nfs/see-fs-01_users/eejvt/BC_evaluation/ALL_CAMPS_'+model_data.model_name+'.png',format='png')
 plt.show()
+
+
+
+
 #%%
 
-
+jl.plot(model_data7.values[30,:,:,:].mean(axis=-1),file_name='/nfs/see-fs-01_users/eejvt/BC_evaluation/BC_surface',title='Annual mean BC surface concentrations',clevs=np.logspace(-4,1,11).tolist(),cmap=plt.cm.bone_r,saving_format='png')
 
 
 

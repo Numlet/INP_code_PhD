@@ -81,10 +81,11 @@ SDS_NAME  = 'Cloud_Top_Temperature'
 SDS_NAME  = 'Cloud_Top_Height'
 SDS_NAME  = 'cloud_top_height_1km'
 SDS_NAME  = 'Cloud_Mask_1km'
+SDS_NAME  = 'Cloud_Fraction'
 hdf  =SD.SD(path+'modis/'+'MYD06_L2.A2014343.1325.006.2014344210847.hdf')
 #print hdf.datasets().keys()
 for k in hdf.datasets().keys():
-    if 'eight' in k:
+    if '' in k:
         print k
 
 sds = hdf.select(SDS_NAME)
@@ -194,7 +195,8 @@ grid_z1 = sc.interpolate.griddata(coord, sat_data, (X,Y), method='linear')
 #grid_z2 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='cubic')
 #grid_z2[grid_z2<0]=0
 grid_z1[np.isnan(grid_z1)]=0
-
+plt.imshow(grid_z1)
+plt.colorbar()
 #%%
 plt.figure(figsize=(15,13))
 plt.subplot(221)

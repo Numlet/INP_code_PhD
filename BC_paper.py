@@ -130,6 +130,7 @@ all_ns=[]
 for run in runs_dict:
     if '10-2' in run:
         c='y'
+        continue
         for T in runs_dict[run].temps:all_temps.append(T)
         for T in runs_dict[run].temps:all_temps.append(T)
     elif '10-3' in run:
@@ -143,23 +144,23 @@ for run in runs_dict:
     plt.plot(runs_dict[run].temps,runs_dict[run].ns,'o',c=c)#,label=run.split(" ", 1)[0])
 
     
-plt.plot([],'o',c='r',label='Eugenol 10-3')
-plt.plot([],'o',c='y',label='Eugenol 10-2')
-plt.plot([],'o',c='orange',label='n-Decane 10-3')
+plt.plot([],'o',c='gold',label='Eugenol 10-3')
+#plt.plot([],'o',c='y',label='Eugenol 10-2')
+plt.plot([],'o',c='r',label='n-Decane 10-3')
 plt.plot(DM_temps,DM_values,'o',c='darkgrey',label='DeMott')
 plt.plot(Diehl_temps,Diehl_values,'o',c='k',label='Diehl')
 
 Ts=np.linspace(-30,-10,100)
 #plt.plot(Ts,BC_parametrization_tom_old(Ts),'o',label='This work ns upper limit')
-plt.plot(Ts,BC_parametrization_tom(Ts),'--',lw=lw,label='This work ns upper limit')
+plt.plot(Ts,BC_parametrization_tom(Ts),'--',lw=lw,label='NEW-UPL (This study upper limit)')
 Ts=np.linspace(-34,-18,100)
-plt.plot(Ts,ulrich(Ts),'--',lw=lw,label='Ulrich ns upper limit')
+plt.plot(Ts,ulrich(Ts),'--',lw=lw,label='Ulrich upper limit',c='green')
 Ts=np.linspace(-38,-18,100)
 #plt.plot(Ts,schill_in_ulrich(Ts),'--',lw=lw,label='Schill in ulrich ns upper limit')
-plt.plot(Ts,schill(Ts),'--',lw=lw,label='Schill ns upper limit')
+plt.plot(Ts,schill(Ts),'--',lw=lw,c='y',label='Schill upper limit')
 plt.yscale('log')
 Ts=np.linspace(-36,-15,100)
-plt.plot(Ts,murray(Ts),'-',lw=lw,label='Murray')
+plt.plot(Ts,murray(Ts),'-',c='red',lw=lw,label='OLD  Murray et al. (2012)')
 #plt.plot(Ts,threshold(Ts),'-',lw=lw,label='Threshold')
 #plt.plot(Ts,umo(Ts),'-',lw=lw,label='Umo contaminated')
 
@@ -170,7 +171,7 @@ plt.yscale('log')
 plt.legend()
 
 Ts=np.linspace(-25,-5,100)
-plt.plot(Ts,feld_parametrization(Ts+273.15),'-.',lw=5,label='Feldspar ns')
+#plt.plot(Ts,feld_parametrization(Ts+273.15),'-.',lw=5,label='Feldspar Atkinson et al. (2013)')
 plt.yscale('log')
 plt.legend()
 ax.legend(loc='center left', bbox_to_anchor=(1.2, 0.5))
@@ -179,26 +180,28 @@ plt.savefig(jl.bc_folder+'all_params.png')
 
 plt.figure()
 lw=3
+matplotlib.rcParams.update({'font.size': 12})
 
 Ts=np.linspace(-30,-10,100)
 #plt.plot(Ts,BC_parametrization_tom_old(Ts),'o',label='This work ns upper limit')
-plt.plot(Ts,BC_parametrization_tom(Ts),'--',lw=lw,label='This work ns upper limit')
+plt.plot(Ts,BC_parametrization_tom(Ts),'--',lw=lw,label='NEW-UPL (This study upper limit)')
 Ts=np.linspace(-34,-18,100)
-plt.plot(Ts,ulrich(Ts),'--',lw=lw,label='Ulrich ns upper limit')
+plt.plot(Ts,ulrich(Ts),'--',lw=lw,label='Ulrich upper limit')
 Ts=np.linspace(-38,-18,100)
 #plt.plot(Ts,schill_in_ulrich(Ts),'--',lw=lw,label='Schill in ulrich ns upper limit')
-plt.plot(Ts,schill(Ts),'y--',lw=lw,label='Schill ns upper limit')
+plt.plot(Ts,schill(Ts),'y--',lw=lw,label='Schill upper limit')
 plt.yscale('log')
 Ts=np.linspace(-36,-15,100)
-plt.plot(Ts,murray(Ts),'r-',lw=lw,label='Murray')
+plt.plot(Ts,murray(Ts),'r-',lw=lw,label='OLD  Murray et al. (2012)')
 
 temps=np.load(jl.bc_folder+'temps.npy')
 grid_of_fractions=np.load(jl.bc_folder+'grid_of_fractions.npy')
 #plt.yscale('log')
 ns_values=np.load(jl.bc_folder+'ns_values.npy')
 levels=np.linspace(0,1,6).tolist()
+plt.title('(a) % of globe surface concentrations dominated by BC')
 plt.contourf(temps,ns_values,grid_of_fractions.T,levels,cmap=plt.cm.bone_r,alpha=0.7)
-plt.colorbar(label='% surface gridboxes')
+plt.colorbar(label='% ')
 plt.legend(loc='lower left',fontsize=12)
 plt.grid()
 plt.ylabel('ns (cm-2)')
@@ -208,29 +211,63 @@ plt.show()
 
 
 #%%
+
+#%%
+
+
+
+
+
 plt.figure()
 for run in runs_dict:
-    if '10-2' in run:
-        c='y'
-    elif '10-3' in run:
+    print run
+#    if '10-2' in run:
+#        c='y'
+#        continue
+#    elif '10-1' in run:
+#        c='y'
+#        continue
+    if '10-3' in run:
         if 'cane' in run:
-            c='orange'
-        else:
             c='r'
+        else:
+            c='gold'
     else:
         c='g'
+        continue
     plt.plot(runs_dict[run].temps,runs_dict[run].ff,'o',c=c)#,label=run.split(" ", 1)[0],c=c)
-plt.plot([],'o',c='r',label='Eugenol 10-3')
-plt.plot([],'o',c='y',label='Eugenol 10-2')
-plt.plot([],'o',c='g',label='10-1')
-plt.plot([],'o',c='orange',label='n-Decane 10-3')
+plt.plot([],'o',c='gold',label='Eugenol 10-3')
+#plt.plot([],'o',c='y',label='Eugenol 10-2')
+#plt.plot([],'o',c='g',label='10-1')
+plt.plot([],'o',c='r',label='n-Decane 10-3')
 plt.ylabel('Fraction frozen')
 plt.xlabel('Temperature (C)')
 plt.legend()
 # time.sleep(1000)
-#%%
 #for i in range(20):
 #    plt.close()
+
+blanks=[
+'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/131115/1328 handling blank MilliQ',
+'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/181115/0922 Handling blank',
+#'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/181115/1558 handling blank sonicate',
+'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/191115/0939 handling blank sonicate with stirrer bar and stir',
+#'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/191115/1053 Handling blank Sonicate',
+#'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/251115/1443 Handling blank Sonicate',
+#'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/251115/1525 Handling Blank Sonicate',
+'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/261115/1007 1 Handling Blank Sonicate',
+'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/261115/1342 2 Handling Blank Sonicate',
+#'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/271115/1204 1 handling blank sonicate',
+'/nfs/a86/earmhol/Experiments/Immersion Stage/1 Raw Data/Tom O/PC/November/271115/1425 2 handling blank sonicate'
+]
+for blank in blanks:
+    temps=np.genfromtxt(blank+'/temps.csv',delimiter=',')
+    ff=np.linspace(1,len(temps),len(temps))/float(len(temps))
+    plt.plot(temps,ff,'o',c='b')
+    print temps.mean()
+plt.plot(temps,ff,'o',c='b',label='Handling Blank')
+plt.legend()
+#plt.savefig('last_fig.png')#,bbox_inches="tight",pad_inches=0.0)
 
 #%%
 
@@ -238,12 +275,12 @@ blank_temps=[-20.81,-21.25,-22.57,-23.33,-23.42,-23.63,-23.77,-24.02,-24.26,-24.
 blank_temps=[-21.25,-22.57,-23.33,-23.63,-23.77,-24.26,-24.69,-25.37,-25.41,-25.49,-26.03,-26.19,-26.46,-26.83,-26.85,-27.10,-27.53,-27.84,-27.92,-28.23,-28.26,-28.53,-28.53,-28.75,-28.87,-29.21,-29.21,-29.31,-29.65,-30.01,-30.32,-30.39,-30.44,-30.48,-32.63,-33.66,]
 blank_ff=np.linspace(1,len(blank_temps),len(blank_temps))/float(len(blank_temps))
 
-plt.plot(blank_temps,blank_ff,'o',c='b',label='blank')
+plt.plot(blank_temps,blank_ff,'o',c='aqua',label='blank')
 plt.legend()
 
 blank_temps=[-17.13,-19.21,-19.23,-19.78,-21.28,-24.01,-24.30,-24.63,-25.42,-25.77,-26.26,-26.62,-26.82,-27.03,-27.05,-27.95,-28.37,-28.43,-28.53,-28.73,-29.00,-29.08,-29.24,-29.61,-29.68,-29.92,-30.26,-30.46,-30.63,-31.20,-31.28,-31.61,-31.68,-31.71,-31.81,-32.08]
 blank_ff=np.linspace(1,len(blank_temps),len(blank_temps))/float(len(blank_temps))
-plt.plot(blank_temps,blank_ff,'o',c='b',label='blank')
+plt.plot(blank_temps,blank_ff,'o',c='aqua',label='blank')
 
 plt.show()
 import time
