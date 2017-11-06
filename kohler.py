@@ -43,14 +43,16 @@ def k_exp(D):
     return np.exp((4*sigma_w*M_w)/(R*T*p_w*D))
     
 Ds=np.logspace(-2,0,10000)
-Ds=np.linspace(0.5,6,10000)
+Ds=np.linspace(0.35,200,100000)
+#Ds=np.logspace(-1,1,1000)
+
 plt.plot(Ds,aw(Ds))
 plt.plot(Ds,sw(Ds))
 plt.plot(Ds,k_exp(Ds))
 plt.axhline(1,c='k',ls='--')
 plt.axvline(Ds[np.argmax(sw(Ds))],c='k',ls='-')
-
-
+plt.xscale('log')
+plt.show()
 
 
 #plt.xscale('log')
